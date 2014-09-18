@@ -44,10 +44,14 @@ public class MenuBar extends JPanel implements ActionListener {
 		_editTextMenu.add(_editText);
 		_downloadMenu.add(_download);
 		
+		_download.addActionListener(this);
+		
 		_fileTab.add(_fileMenu);
 		_editAudioTab.add(_editAudioMenu);
 		_editTextTab.add(_editTextMenu);
 		_downloadTab.add(_downloadMenu);
+		
+		
 		
 		add(_fileTab);
 		add(_editAudioTab);
@@ -63,6 +67,9 @@ public class MenuBar extends JPanel implements ActionListener {
 			if(fileChooserReturn == JFileChooser.APPROVE_OPTION) {
 				File theFile = fileChooser.getSelectedFile();
 			}
+		}
+		if (ae.getSource() == _download) {
+			DownloadPanel dl = new DownloadPanel();
 		}
 	}
 }
