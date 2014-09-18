@@ -29,7 +29,6 @@ public class MediaPlayer extends JPanel implements ActionListener {
 	private JButton _mute = new JButton("Mute");
 	private JButton _fastForward = new JButton(">>");
 	private JButton _rewind = new JButton("<<");
-	private JLabel _timeDisplay = new JLabel("0 seconds");
 	private JPanel _controls = new JPanel();
 	
 	public MediaPlayer() {
