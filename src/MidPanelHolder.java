@@ -23,7 +23,6 @@ public class MidPanelHolder extends JPanel {
 	private JPanel _fileInfo = new JPanel();
 	private JPanel _mediaPlayerHolder = new MediaPlayer();
 	private JPanel _controls = new JPanel();
-	private JButton _testBtn = new JButton("Testing");
 	private EmbeddedMediaPlayerComponent _mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
 	private EmbeddedMediaPlayer _video = _mediaPlayerComponent.getMediaPlayer();
 	
@@ -34,7 +33,7 @@ public class MidPanelHolder extends JPanel {
 		_fileInfo.setPreferredSize(new Dimension(200, 450));
 		
 		add(_fileInfo, BorderLayout.WEST);
-		add(_testBtn, BorderLayout.CENTER);
+		add(_mediaPlayerHolder, BorderLayout.CENTER);
 		
 	}
 }
