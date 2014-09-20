@@ -29,6 +29,8 @@ public class MenuBar extends JPanel implements ActionListener {
 	private JMenuItem _editText = new JMenuItem("Edit Text");
 	private JMenuItem _download = new JMenuItem("Download");
 	
+	private CurrentFile _currentFile;
+	
 	
 	public MenuBar() {
 		setLayout(new GridLayout(1, 0));
@@ -66,6 +68,15 @@ public class MenuBar extends JPanel implements ActionListener {
 			int fileChooserReturn = fileChooser.showOpenDialog(null);
 			if(fileChooserReturn == JFileChooser.APPROVE_OPTION) {
 				File theFile = fileChooser.getSelectedFile();
+				_currentFile = CurrentFile.getInstance();
+				_currentFile.setInstance(theFile);
+				if(_currentFile.getType() == null) {
+					JOptionPane.showMessageDialog(null, "Please select an audio or video file");
+					_currentFile = null;
+				} else if ((!(_currentFile.getType().equals("Video")) && (_currentFile.getType().equals("Audio") && (_currentFile.getType().equals("Video with Audio"))))) {
+					JOptionPane.showMessageDialog(null, "Please select an audio or video file");
+					_currentFile = null;
+				}
 			}
 		}
 		if (ae.getSource() == _download) {
