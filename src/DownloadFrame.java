@@ -20,9 +20,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
 
+//TODO: COMMENTS.
 
-
-public class DownloadPanel extends JFrame implements ActionListener {
+public class DownloadFrame extends JFrame implements ActionListener {
 	private JLabel urlLabel = new JLabel("URL:");
 	private JTextField url = new JTextField(35);
 	private JCheckBox openSource = new JCheckBox("Open source? ");
@@ -33,15 +33,17 @@ public class DownloadPanel extends JFrame implements ActionListener {
 	private JButton cancelBtn = new JButton("Cancel");
 	private JLabel infoBar = new JLabel("Downloading..		");
 	private dlWorker worker = null;
+	private boolean _isWorking = false;
 	
-	public DownloadPanel() {
+	
+	public DownloadFrame() {
+		setTitle("Lavitasy Download");
 		setLayout(new BorderLayout());
 		setVisible(true);
 		setSize(new Dimension(450, 120));
 		dlBtn.addActionListener(this);
 		
 		dlInfo.setLayout(new BorderLayout());
-		//dlInfo.add(infoBar, BorderLayout.NORTH);
 		dlInfo.add(urlLabel, BorderLayout.WEST);
 		dlInfo.add(url, BorderLayout.CENTER);
 		dlInfo.add(openSource, BorderLayout.EAST);
@@ -74,7 +76,7 @@ public class DownloadPanel extends JFrame implements ActionListener {
 				return;
 			}
 			
-			if (!(worker == null)) {
+			if (_isWorking == true) {
 				int reply = JOptionPane.showConfirmDialog(this, "ERROR: " + worker._filename + " is already downloading." + System.getProperty("line.separator") 
 						+ "Stop downloading " + worker._filename + "?", "Stop downloading", JOptionPane.YES_NO_OPTION);
 				
@@ -83,7 +85,7 @@ public class DownloadPanel extends JFrame implements ActionListener {
 				}
 				// stops current download and starts new one
 				// confirms again incase download already finished
-				if (!(worker ==null)) {
+				if (_isWorking == true) {
 					worker.cancelDl();
 				}
 			}
@@ -107,10 +109,8 @@ public class DownloadPanel extends JFrame implements ActionListener {
 			} else {
 				dl(fileName, Options.NEW);
 			}
-		} 
-		
-		if (e.getSource() == cancelBtn) {
-			if (worker == null) {
+		} else if (e.getSource() == cancelBtn) {
+			if (_isWorking == false) {
 				JOptionPane.showMessageDialog(this,
 						"ERROR: no file is currently being downloaded.");
 			} else if (progressBar.getValue() != 100) {
@@ -172,18 +172,24 @@ public class DownloadPanel extends JFrame implements ActionListener {
 	
 	private void finishDl() {
 		if (!worker.cancelled) {
+			
+			//TODO: exit status, ASK PAUL ^_^
 			if (worker._exitStatus == 0) {
 				JOptionPane.showMessageDialog(this, "Successful download of " + worker._filename + "!");
 				//LogDetails log = LogDetails.getInstance();
 				//log.writeLog(LogDetails.Type.DOWNLOAD);
 			} else {
 				progressBar.setValue(0);
+				infoBar.setText("Downloading.. 		");
 				JOptionPane.showMessageDialog(this, "ERROR encountered, could not download " + worker._filename + ".");
 			}
 		 } else if (worker.alreadyFin == true) {
 			 JOptionPane.showMessageDialog(this, "ERROR: " + worker._filename + " has already finished downloadng.");
-			 worker = null;
+			 
 		 } else {
+			 if (worker._exitStatus == 3) {
+				 
+			 }
 			 // explicitly cancelled
 			 JOptionPane.showMessageDialog(this, worker._filename + " has stopped downloadng.");
 		 }
@@ -199,18 +205,17 @@ public class DownloadPanel extends JFrame implements ActionListener {
 		public dlWorker(String filename, Options o) {
 			_filename = filename;
 			_option = o;
-			//ProgressPanel.getInstance().newDownload(this);
-			if (this != null) {
-				infoBar.setText("Downloading.. " + _filename + " 0% ");
-			}
+			_isWorking = true;
+			infoBar.setText("Downloading.. " + _filename + " 0% ");
 		}
 		
 		@Override
 		protected Void doInBackground() throws Exception {
 			String urlLink = url.getText();
 			String line;
-			int progress = 1;
 			
+			// progress line bars are seen as dots
+			// Suppress quotation marks
 			String cmd = "wget " + _option.toString() + "--progress=dot --timeout=5 -P " + System.getProperty("user.home") + " \"" + urlLink + "\"";
 			ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 			
@@ -232,17 +237,25 @@ public class DownloadPanel extends JFrame implements ActionListener {
             		publish(0);
             		return null;
             	}
-            	// progress line bars are seen as dots
+            	// progress line bars are seen as dots and progress % can be found on lines containing these line bars
             	if (line.contains("..........")) {
-            		// change starting progress to current % of resuming file
+            		// progress of current % 
             		String[] result = line.split("%");
                 	String current = result[0].substring(result[0].length()-2, result[0].length());
-                	progress = Integer.parseInt(current);
-            		publish(progress);
-            		//progress++;
+                	// cases when it is less than 10
+                	if ((current.charAt(0)) == ' ') {
+                		current = current.charAt(1) + "";
+                	} else if (current.equals("00")) {
+                		current = "100";
+                	}
+                	int progress = Integer.parseInt(current);
+                	publish(progress);
+            		
             	}
             }
-	                
+            
+	            
+            //_exitStatus = process.waitFor();
             if (!isCancelled()) {
             	_exitStatus = process.waitFor();
             	publish(100);
@@ -263,10 +276,7 @@ public class DownloadPanel extends JFrame implements ActionListener {
 	     		infoBar.setText("Downloading.. " + _filename + " " + progressBar.getValue()
 	     				+ " %");
 
-	     		if (progressBar.getValue() == 0) {
-	     			// standard non downloading label
-	     			infoBar.setText("Downloading.. 		");
-	     		} else if (progressBar.getValue() == 100) {
+	     		if (progressBar.getValue() == 100) {
 	     			infoBar.setText("Completed download of.. " + _filename);
 	     		}
 	         }
@@ -275,11 +285,13 @@ public class DownloadPanel extends JFrame implements ActionListener {
 		 @Override
 		 protected void done() {
 			finishDl();
+			_isWorking = false;
 		 }
 		 
 		 
 		 public void cancelDl() {
 			 cancelled = true;
+			 cancel(true);
 		 }
 	
 	}

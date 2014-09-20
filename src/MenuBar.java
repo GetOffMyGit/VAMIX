@@ -28,7 +28,7 @@ public class MenuBar extends JPanel implements ActionListener {
 	private JMenuItem _editAudio = new JMenuItem("Edit Audio");
 	private JMenuItem _editText = new JMenuItem("Edit Text");
 	private JMenuItem _download = new JMenuItem("Download");
-	
+	private DownloadFrame dl = null;
 	private CurrentFile _currentFile;
 	
 	
@@ -64,6 +64,7 @@ public class MenuBar extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent ae) {
 		if(ae.getSource() == _openFile) {
+			
 			JFileChooser fileChooser = new JFileChooser();
 			int fileChooserReturn = fileChooser.showOpenDialog(null);
 			if(fileChooserReturn == JFileChooser.APPROVE_OPTION) {
@@ -80,7 +81,18 @@ public class MenuBar extends JPanel implements ActionListener {
 			}
 		}
 		if (ae.getSource() == _download) {
-			DownloadPanel dl = new DownloadPanel();
+			// first time selecting download option
+			if (dl == null) {
+				dl = new DownloadFrame();
+			} else {
+				// download frame already opened, brings to user
+				// doesn't create duplicates and allows only one dl at a time
+				if (dl.isActive()) {
+					dl.toFront();
+				} else {
+					dl = new DownloadFrame();
+				}
+			}	
 		}
 	}
 }
