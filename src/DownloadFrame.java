@@ -31,9 +31,10 @@ public class DownloadFrame extends JFrame implements ActionListener {
 	private JPanel proceessInfo = new JPanel();
 	private JProgressBar progressBar = new JProgressBar();
 	private JButton cancelBtn = new JButton("Cancel");
-	private JLabel infoBar = new JLabel("Downloading..		");
+	private JLabel infoBar = new JLabel("");
 	private dlWorker worker = null;
 	private boolean _isWorking = false;
+
 	
 	
 	public DownloadFrame() {
@@ -180,7 +181,7 @@ public class DownloadFrame extends JFrame implements ActionListener {
 				//log.writeLog(LogDetails.Type.DOWNLOAD);
 			} else {
 				progressBar.setValue(0);
-				infoBar.setText("Downloading.. 		");
+				infoBar.setText("");
 				JOptionPane.showMessageDialog(this, "ERROR encountered, could not download " + worker._filename + ".");
 			}
 		 } else if (worker.alreadyFin == true) {

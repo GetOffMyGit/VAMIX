@@ -25,7 +25,9 @@ public class MenuBar extends JPanel implements ActionListener {
 	
 	private JMenuItem _openFile = new JMenuItem("Open File");
 	private JMenuItem _openRecent = new JMenuItem("Open Recent");
-	private JMenuItem _editAudio = new JMenuItem("Edit Audio");
+	private JMenuItem _stripAudio = new JMenuItem("Strip Audio");
+	private JMenuItem _replaceAudio = new JMenuItem("Replace Audio");
+	private JMenuItem _overlayAudio = new JMenuItem("Overlay Audio");
 	private JMenuItem _editText = new JMenuItem("Edit Text");
 	private JMenuItem _download = new JMenuItem("Download");
 	private DownloadFrame dl = null;
@@ -42,11 +44,16 @@ public class MenuBar extends JPanel implements ActionListener {
 		_openRecent.addActionListener(this);
 		_fileMenu.add(_openRecent);		
 		
-		_editAudioMenu.add(_editAudio);
+		_editAudioMenu.add(_stripAudio);
+		_editAudioMenu.add(_replaceAudio);
+		_editAudioMenu.add(_overlayAudio);
 		_editTextMenu.add(_editText);
 		_downloadMenu.add(_download);
 		
 		_download.addActionListener(this);
+		_stripAudio.addActionListener(this);
+		_replaceAudio.addActionListener(this);
+		_overlayAudio.addActionListener(this);
 		
 		_fileTab.add(_fileMenu);
 		_editAudioTab.add(_editAudioMenu);
@@ -93,6 +100,23 @@ public class MenuBar extends JPanel implements ActionListener {
 					dl = new DownloadFrame();
 				}
 			}	
+		}
+		if (ae.getSource() == _stripAudio) {
+			// need swing worker
+			// extract source input 0 (x.mp4) and only take its video
+			//avconv -i x.mp4 -map 0:v l.mp4
+
+		}
+		if (ae.getSource() == _replaceAudio) {
+			
+		}
+		if (ae.getSource() == _overlayAudio) {
+			// mix two audio
+			//avconv -i input1 -i input2 -filter_complex amix=input=3:duration=first:dropout_transition=2 output
+			// need swing worker
+			
+			//avconv -i input1 -i input2 -map 0:v -map 1:a output
+			//only video and audio of input1
 		}
 	}
 }
