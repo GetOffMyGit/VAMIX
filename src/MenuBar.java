@@ -1,3 +1,4 @@
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -5,14 +6,16 @@ import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 
-public class MenuBar extends JPanel implements ActionListener {
+public class MenuBar extends JPanel implements ActionListener {	
 	private JMenuBar _fileTab = new JMenuBar();
 	private JMenuBar _editAudioTab = new JMenuBar();
 	private JMenuBar _editTextTab = new JMenuBar();
@@ -32,10 +35,12 @@ public class MenuBar extends JPanel implements ActionListener {
 	private JMenuItem _download = new JMenuItem("Download");
 	private DownloadFrame dl = null;
 	private CurrentFile _currentFile;
+	private MidPanelHolder _midPanelHolder;
 	
 	
-	public MenuBar() {
-		setLayout(new GridLayout(1, 0));
+	public MenuBar(MidPanelHolder midPanelHolder) {
+		_midPanelHolder = midPanelHolder;
+		setLayout(new FlowLayout(FlowLayout.LEFT));
 		
 		
 		_openFile.addActionListener(this);
@@ -54,6 +59,7 @@ public class MenuBar extends JPanel implements ActionListener {
 		_stripAudio.addActionListener(this);
 		_replaceAudio.addActionListener(this);
 		_overlayAudio.addActionListener(this);
+		_openRecent.addActionListener(this);
 		
 		_fileTab.add(_fileMenu);
 		_editAudioTab.add(_editAudioMenu);
@@ -77,6 +83,7 @@ public class MenuBar extends JPanel implements ActionListener {
 			if(fileChooserReturn == JFileChooser.APPROVE_OPTION) {
 				File theFile = fileChooser.getSelectedFile();
 				_currentFile = CurrentFile.getInstance();
+				_currentFile.resetInstance();
 				_currentFile.setInstance(theFile);
 				if(_currentFile.getType() == null) {
 					JOptionPane.showMessageDialog(null, "Please select an audio or video file");
@@ -84,6 +91,8 @@ public class MenuBar extends JPanel implements ActionListener {
 				} else if ((!(_currentFile.getType().equals("Video")) && (_currentFile.getType().equals("Audio") && (_currentFile.getType().equals("Video with Audio"))))) {
 					JOptionPane.showMessageDialog(null, "Please select an audio or video file");
 					_currentFile = null;
+				} else {
+					_midPanelHolder.refreshMidPane();
 				}
 			}
 		}

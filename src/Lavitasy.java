@@ -10,9 +10,9 @@ import javax.swing.JPanel;
 
 
 public class Lavitasy extends JFrame {
-	private JPanel _top = new MenuBar();
+	private JPanel _top;
 	private JPanel _mid = new MidPanelHolder();
-	private JPanel _bot = new Timeline();
+//	private JPanel _bot = new Timeline();
 	
 	public static void main(String[] args) {
 		Lavitasy lavitasy = new Lavitasy();
@@ -24,6 +24,7 @@ public class Lavitasy extends JFrame {
 		setPreferredSize(new Dimension(1000, 600));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
+		_top = new MenuBar((MidPanelHolder) _mid);
 		
 		setLayout(new BorderLayout());
 		
@@ -32,6 +33,6 @@ public class Lavitasy extends JFrame {
 		
 		add(_top, BorderLayout.NORTH);
 		add(_mid, BorderLayout.CENTER);
-		add(_bot, BorderLayout.SOUTH);
+	//	add(_bot, BorderLayout.SOUTH);
 	}
 }
