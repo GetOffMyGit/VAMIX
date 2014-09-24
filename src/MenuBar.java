@@ -115,6 +115,7 @@ public class MenuBar extends JPanel implements ActionListener {
 			// extract source input 0 (x.mp4) and only take its video
 			//avconv -i x.mp4 -map 0:v l.mp4
 
+			// create avconv command
 		}
 		if (ae.getSource() == _replaceAudio) {
 			
