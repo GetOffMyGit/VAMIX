@@ -1,18 +1,27 @@
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 
 public class MenuBar extends JPanel implements ActionListener {	
@@ -37,6 +46,9 @@ public class MenuBar extends JPanel implements ActionListener {
 	private CurrentFile _currentFile;
 	private MidPanelHolder _midPanelHolder;
 	
+	
+	private stripAudioWorker _audioWorker;
+	private ProjectInfo _projectInfo;
 	
 	public MenuBar(MidPanelHolder midPanelHolder) {
 		_midPanelHolder = midPanelHolder;
@@ -72,6 +84,8 @@ public class MenuBar extends JPanel implements ActionListener {
 		add(_editAudioTab);
 		add(_editTextTab);
 		add(_downloadTab);
+		
+		_projectInfo = ProjectInfo.getInstance();
 	}
 
 	@Override
@@ -111,22 +125,116 @@ public class MenuBar extends JPanel implements ActionListener {
 			}	
 		}
 		if (ae.getSource() == _stripAudio) {
+			JPanel panel = new JPanel(new BorderLayout());
+			// splits jLabel at <br> causing a new line
+			panel.add(new JLabel("<html>Stripping out audio, would you like to save a copy? <br> If yes please enter an output name:</html>"), BorderLayout.NORTH);
+			JTextField outputName = new JTextField(10);
+			panel.add(outputName, BorderLayout.CENTER);
+			String[] buttons = { "Yes +Raw", "Yes +Overlays", "No", "Cancel" };
+			String message  = "Strip Audio";
+			int reply = JOptionPane.showOptionDialog(this, panel, message, 0, 0, null, buttons, buttons[0]);
+			
+			if (buttons[reply].equals("Cancel")) { return;
+			} else if (buttons[reply].equals("Yes +Raw")) {
+				//avconv -i x.mp4 -map 0:a l.mp3
+				_audioWorker = new stripAudioWorker(outputName.getText());
+				_audioWorker.execute();
+				// check if empty
+				
+			} else if (buttons[reply].equals("Yes +Overlays")) {
+				// when
+			}
+			
+			// is stripped
+			
 			// need swing worker
 			// extract source input 0 (x.mp4) and only take its video
 			//avconv -i x.mp4 -map 0:v l.mp4
-
+			//avconv -i x.mp4 -map 0:a l.mp3
+			
+			// ask for raw or with overlays
 			// create avconv command
+			
 		}
 		if (ae.getSource() == _replaceAudio) {
+			//main audio replaced
+			//avconv -i input1 -i input2 -map 0:v -map 1:a output
+			//avconv -i x.mp4 -strict experimental -i a.mp3 -strict experimental -map 0:v -map 1:a output.mp4
+			//only video and audio of input1
+			//"allow non-standardized experimental things"
+			//"‘-strict[:stream_specifier] integer (input/output,audio,video)’ how strictly to follow the standards"
+			String[] buttons = { "Yes", "Yes with overlays deleted", "No", "Cancel" };
+			String message  = "Replace current audio with ";
+			int reply = JOptionPane.showOptionDialog(this, message, "ERROR", 0, 0, null, buttons, buttons[0]);
 			
 		}
 		if (ae.getSource() == _overlayAudio) {
+			JFileChooser fileChooser = new JFileChooser();
+			int fileChooserReturn = fileChooser.showOpenDialog(null);
+			if(fileChooserReturn == JFileChooser.APPROVE_OPTION) {
+				File theFile = fileChooser.getSelectedFile();
+				AudioFile overlay = new AudioFile(theFile);
+				if(overlay.getType() == null) {
+					JOptionPane.showMessageDialog(null, "Please select an audio file");
+				} else if (!(overlay.getType().equals("Audio"))) {
+					JOptionPane.showMessageDialog(null, "Please select an audio file");
+					
+				} else {
+					_projectInfo.addOverlay(overlay);
+					//_midPanelHolder.refreshMidPane();
+				}
+			}
 			// mix two audio
 			//avconv -i input1 -i input2 -filter_complex amix=input=3:duration=first:dropout_transition=2 output
 			// need swing worker
 			
-			//avconv -i input1 -i input2 -map 0:v -map 1:a output
-			//only video and audio of input1
+
 		}
 	}
+	
+	public void finish() {
+		JOptionPane.showMessageDialog(this, "Successful download of !");
+	}
+	
+	class stripAudioWorker extends SwingWorker<Void, Integer> {
+		private int _exitStatus;
+		private String _outputName;
+		public stripAudioWorker(String outputName) {
+			_outputName = outputName;
+		}
+		
+		@Override
+		protected Void doInBackground() throws Exception {
+			
+			
+			// progress line bars are seen as dots
+			// Suppress quotation marks
+			String cmd = "avconv -i " + _currentFile.getPath() + " -map 0:a ~/"+ _outputName;
+			ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+			
+			builder.redirectErrorStream(true);
+			Process process = null;
+			try {
+				process = builder.start();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			
+			_exitStatus = process.waitFor();
+			
+            process.destroy();
+			return null;
+		}
+		
+		 @Override
+	     protected void process(List<Integer> chunks) {
+
+	     }
+		 
+		 @Override
+		 protected void done() {
+			 finish();
+		 }
+	}
+
 }

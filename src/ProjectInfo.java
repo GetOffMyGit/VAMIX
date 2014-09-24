@@ -1,3 +1,8 @@
+import java.util.ArrayList;
+import java.util.List;
+
+
+
 public class ProjectInfo {
 	// text file associated
 	// read and write to file
@@ -5,8 +10,26 @@ public class ProjectInfo {
 	// ie data source
 	// text details start
 	// text details end
+	// overlay file
+	private List<AudioFile> _overlays;
 	
+	private static ProjectInfo _instance;
 	
+	protected ProjectInfo() {
+		// create
+		_overlays = new ArrayList<AudioFile>();
+	}
+	
+	public static ProjectInfo getInstance() {
+		if (_instance == null) {
+			_instance = new ProjectInfo();
+		} 
+		return _instance;
+	}
+	
+	public void addOverlay(AudioFile f) {
+		_overlays.add(f);
+	}
 	// singleton class accessed by evertyhing
 	
 	// methods 
