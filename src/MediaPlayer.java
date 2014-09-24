@@ -4,9 +4,14 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -28,16 +33,18 @@ public class MediaPlayer extends JPanel implements ActionListener {
 
 	private EmbeddedMediaPlayerComponent _mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
 	private EmbeddedMediaPlayer _video = _mediaPlayerComponent.getMediaPlayer();
-	private JButton _play = new JButton("Play");
-	private JButton _pause = new JButton("Pause");
-	private JButton _stop = new JButton("Stop");
-	private JButton _mute = new JButton("Mute");
-	private JButton _fastForward = new JButton(">>");
-	private JButton _rewind = new JButton("<<");
+	private JButton _play = new JButton();
+	private JButton _pause = new JButton();
+	private JButton _stop = new JButton();
+	private JButton _mute = new JButton();
+	private JButton _fastForward = new JButton();
+	private JButton _rewind = new JButton();
 	private JSlider _volumeControl;
 	private JPanel _controls = new JPanel();
 	private JProgressBar _progressBar = new JProgressBar();
 	private Timer _clock;
+	private JLabel _durationLabel = new JLabel("\\ 00:00:00");
+	private JLabel _timer = new JLabel("00:00:00");
 
 	private CurrentFile _currentFile = CurrentFile.getInstance();
 
@@ -51,8 +58,8 @@ public class MediaPlayer extends JPanel implements ActionListener {
 		setLayout(new BorderLayout());
 
 		//Media player and control dimensions
-		_mediaPlayerComponent.setPreferredSize(new Dimension(800, 475));
-		_controls.setPreferredSize(new Dimension(800, 50));
+		_mediaPlayerComponent.setPreferredSize(new Dimension(800, 470)); //475
+		_controls.setPreferredSize(new Dimension(800, 60));
 
 		//Create and start clock
 		_clock = new Timer(500, this);
@@ -63,25 +70,75 @@ public class MediaPlayer extends JPanel implements ActionListener {
 		_progressBar.setMinimum(0);
 		_progressBar.setMaximum(_currentFile.getDurationSeconds());
 
+		//Set Up buttons with images
+		try {
+			Image playImage = ImageIO.read(new File("res/Play.png"));
+			_play.setBorderPainted(false);
+			_play.setContentAreaFilled(false);
+			_play.setPreferredSize(new Dimension(45, 45));
+			playImage = playImage.getScaledInstance(80, 80, java.awt.Image.SCALE_SMOOTH);
+			_play.setIcon(new ImageIcon(playImage));
+			
+			Image fastForwardImage = ImageIO.read(new File("res/Fastforward.png"));
+			_fastForward.setBorderPainted(false);
+			_fastForward.setContentAreaFilled(false);
+			_fastForward.setPreferredSize(new Dimension(35, 35));
+			fastForwardImage = fastForwardImage.getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH);
+			_fastForward.setIcon(new ImageIcon(fastForwardImage));
+
+			Image muteImage = ImageIO.read(new File("res/Mute.png"));
+			_mute.setBorderPainted(false);
+			_mute.setContentAreaFilled(false);
+			_mute.setPreferredSize(new Dimension(35, 35));
+			muteImage = muteImage.getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH);
+			_mute.setIcon(new ImageIcon(muteImage));
+			
+			Image stopImage = ImageIO.read(new File("res/Stop.png"));
+			_stop.setBorderPainted(false);
+			_stop.setContentAreaFilled(false);
+			_stop.setPreferredSize(new Dimension(45, 45));
+			stopImage = stopImage.getScaledInstance(80, 80, java.awt.Image.SCALE_SMOOTH);
+			_stop.setIcon(new ImageIcon(stopImage));
+			
+			Image rewindImage = ImageIO.read(new File("res/Rewind.png"));
+			_rewind.setBorderPainted(false);
+			_rewind.setContentAreaFilled(false);
+			_rewind.setPreferredSize(new Dimension(35, 35));
+			rewindImage = rewindImage.getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH);
+			_rewind.setIcon(new ImageIcon(rewindImage));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		//Disable all buttons except the play button at initial startup
 		_pause.setEnabled(false);
 		_stop.setEnabled(false);
-//		_mute.setEnabled(false);
+		_mute.setEnabled(false);
 		_fastForward.setEnabled(false);
 		_rewind.setEnabled(false);
 
 		//Slider configurations
 		_volumeControl = new JSlider();
 		
+		//Display video duration on the label
+		if(_currentFile.getDuration() != null) {
+			String[] durationParts = _currentFile.getDuration().split("\\.");
+			String duration = "\\ " + durationParts[0];
+			_durationLabel.setText(duration);
+		}
+		
 		//Add control components to the control panel
 		_controls.setLayout(new FlowLayout(FlowLayout.LEFT));
+		_controls.add(_rewind);
+	//	_controls.add(_pause);
 		_controls.add(_play);
-		_controls.add(_pause);
+		_controls.add(_fastForward);
 		_controls.add(_stop);
 		_controls.add(_mute);
-		_controls.add(_fastForward);
-		_controls.add(_rewind);
 		_controls.add(_volumeControl);
+		_controls.add(_timer);
+		_controls.add(_durationLabel);
 
 		//Add action listeners to the control components
 		_play.addActionListener(this);
@@ -132,7 +189,10 @@ public class MediaPlayer extends JPanel implements ActionListener {
 			_fastForward.setEnabled(false);
 			_rewind.setEnabled(false);
 		} else if(ae.getSource() == _fastForward) {
-			_video.skip(1000);
+			_fastForward.setEnabled(false);
+			while(!_fastForward.isEnabled()) {
+				_video.skip(1000);
+			}
 		} else if(ae.getSource() == _rewind) {
 			_video.skip(-1000);
 		} else if(ae.getSource() == _mute) {
@@ -140,6 +200,33 @@ public class MediaPlayer extends JPanel implements ActionListener {
 		} else if(ae.getSource() == _clock) {
 			int time = (int) (_video.getTime()/1000.0);
 			_progressBar.setValue(time);
+			String stringTime = formatTime(time);
+			_timer.setText(stringTime);
 		}
+	}
+	
+	private String formatTime(int time) {
+		int hours = time / 3600;
+		int remainder = time - (hours * 3600);
+		int minutes = remainder / 60;
+		remainder = remainder - (minutes * 60);
+		int seconds = remainder;
+		
+		String stringHours = Integer.toString(hours);
+		String stringMinutes = Integer.toString(minutes);
+		String stringSeconds = Integer.toString(seconds);
+		
+		if(hours < 10) {
+			stringHours = "0" + Integer.toString(hours);
+		}
+		if(minutes < 10) {
+			stringMinutes = "0" + Integer.toString(minutes);
+		}
+		if(seconds < 10) {
+			stringSeconds = "0" + Integer.toString(seconds);
+		}
+		String format = stringHours + ":" + stringMinutes + ":" + stringSeconds;
+		
+		return format;
 	}
 }
