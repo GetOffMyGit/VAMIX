@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -36,7 +37,7 @@ public class MenuBar extends JPanel implements ActionListener {
 	private JMenu _downloadMenu = new JMenu("Download");
 	
 	private JMenuItem _openFile = new JMenuItem("Open File");
-	private JMenuItem _openRecent = new JMenuItem("Open Recent");
+	private JMenuItem _save = new JMenuItem("Save");
 	private JMenuItem _stripAudio = new JMenuItem("Strip Audio");
 	private JMenuItem _replaceAudio = new JMenuItem("Replace Audio");
 	private JMenuItem _overlayAudio = new JMenuItem("Overlay Audio");
@@ -52,14 +53,14 @@ public class MenuBar extends JPanel implements ActionListener {
 	
 	public MenuBar(MidPanelHolder midPanelHolder) {
 		_midPanelHolder = midPanelHolder;
-		setLayout(new FlowLayout(FlowLayout.LEFT));
+		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		
 		
 		_openFile.addActionListener(this);
 		_fileMenu.add(_openFile);
 		
-		_openRecent.addActionListener(this);
-		_fileMenu.add(_openRecent);		
+		_save.addActionListener(this);
+		_fileMenu.add(_save);		
 		
 		_editAudioMenu.add(_stripAudio);
 		_editAudioMenu.add(_replaceAudio);
@@ -71,7 +72,7 @@ public class MenuBar extends JPanel implements ActionListener {
 		_stripAudio.addActionListener(this);
 		_replaceAudio.addActionListener(this);
 		_overlayAudio.addActionListener(this);
-		_openRecent.addActionListener(this);
+		_save.addActionListener(this);
 		
 		_fileTab.add(_fileMenu);
 		_editAudioTab.add(_editAudioMenu);
