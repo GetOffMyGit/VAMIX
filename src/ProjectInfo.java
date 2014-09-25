@@ -31,6 +31,7 @@ public class ProjectInfo {
 	private boolean _isReplaced = false;
 	private List<String> _commands;
 	private AudioFile _newAudio;
+	private File _noAudio;
 	protected ProjectInfo() {
 		// create 
 		_overlays = new DefaultListModel<AudioFile>();
@@ -91,7 +92,7 @@ public class ProjectInfo {
 		
 	}
 	
-	public void audioCombine() {
+/*	public void audioCombine() {
 		String command = "avconv ";
 		int inputs = 0; 
 		if (_isReplaced) {
@@ -99,25 +100,38 @@ public class ProjectInfo {
 			inputs++;
 		} else if (!(_isStripped)) {
 			// obtains audio from video and creates a temporary file in program space
-			String cmd = "avconv -i " + _currentFile.getPath() + " -map 0:a .temp1.mp3";
+			String cmd = "avconv -i " + _currentFile.getPath();
 			_commands.add(cmd);
-			command += "-i .temp1.mp3 " ;
 			inputs++;
 		}
+		
+		//avconv -i "video_file" -map 0:v "output_file"
 
 		if (!(_overlays.isEmpty())) {
 			for (int i = 0; i < _overlays.size(); i ++) {
 				AudioFile f = (AudioFile)_overlays.getElementAt(i);
 				command += "-i " + f.getPath() + " ";
 				inputs++;
-				System.out.println(command);
+		//		System.out.println(command);
 				//avconv -i input1 -i input2 -filter_complex amix=inputs=3:duration=first:dropout_transition=2 output
 				// need swing worker
 			}
 		}
 		
-		command += "-filter_complex amix=inputs=" + inputs + ":duration=longest .temp2.mp3";
+		command += "-filter_complex amix=inputs=" + inputs + ":duration=longest ";
 		_commands.add(command);
+	} */
+	
+	public void audioCombine(String outputName) {
+		int inputs = 0;
+		if(_isReplaced) {
+			String command = "avconv -i" + _currentFile.getPath() + "-map 0:v " + outputName;
+			_noAudio = new File(outputName);
+			inputs++;
+			_commands.add(command);
+			command = "avconv -i" + _newAudio.getPath() + "-i" + _noAudio.getAbsolutePath() + "-filter_complex amix=inputs=2:duration=longest " + outputName;
+			_commands.add(command);
+		}
 	}
 	
 	public void finish() {
@@ -138,7 +152,7 @@ public class ProjectInfo {
 	}
 	
 	public void render(String outputName) {
-			audioCombine();
+			audioCombine(outputName);
 			//"allow non-standardized experimental things"
 			String command = "avconv -i " + _currentFile.getPath() + " -strict experimental -i  .temp2.mp3" 
 			+ " -strict experimental -map 0:v -map 1:a " + System.getProperty("user.home") + System.getProperty("file.separator") + outputName;
@@ -156,11 +170,20 @@ public class ProjectInfo {
 		protected Void doInBackground() throws Exception {
 			for (String s : _commands) {
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", s);
+				System.out.println(s);
 				
 				builder.redirectErrorStream(true);
 				Process process = null;
 				try {
 					process = builder.start();
+					InputStream stdout = process.getInputStream();
+					InputStream stderr = process.getErrorStream();
+					BufferedReader stdoutBuffered =	new BufferedReader(new InputStreamReader(stdout));
+					String line = null;
+					
+					while((line = stdoutBuffered.readLine()) != null) {
+						System.out.println(line);
+					}
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
@@ -180,7 +203,7 @@ public class ProjectInfo {
 		 
 		 @Override
 		 protected void done() {
-			 finish();
+		//	 finish();
 		 }
 	}
 

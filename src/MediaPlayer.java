@@ -322,7 +322,7 @@ public class MediaPlayer extends JPanel implements ActionListener {
 	}
 
 
-	private String formatTime(int time) {
+	public String formatTime(int time) {
 		int hours = time / 3600;
 		int remainder = time - (hours * 3600);
 		int minutes = remainder / 60;
