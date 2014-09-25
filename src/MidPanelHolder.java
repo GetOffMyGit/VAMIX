@@ -27,25 +27,33 @@ import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 public class MidPanelHolder extends JPanel {
 	private JPanel _fileInfo = new FileInfo();
 	private JPanel _mediaPlayerHolder = new MediaPlayer();
-	private JPanel _controls = new JPanel();
 	private JPanel _allInfo = new JPanel();
-	private JPanel _overlay;
+	private JPanel _overlay = new OverlayPanel();
+	private JPanel _audioPlayerHolder = new JPanel();
+	private JPanel _audioPlayer = new AudioPlayer();
 	private ProjectInfo _projectInfo;
 	
 	
 	public MidPanelHolder() {
 		setLayout(new BorderLayout());
+		_audioPlayerHolder.setLayout(new BorderLayout());
 		
-		_fileInfo.setPreferredSize(new Dimension(200, 200));
+		_fileInfo.setPreferredSize(new Dimension(200, 80));
 		_allInfo.setLayout(new BorderLayout());
 		_allInfo.add(_fileInfo, BorderLayout.NORTH);
-		_overlay = new OverlayPanel();
-		_allInfo.add(_overlay, BorderLayout.CENTER);
+		
+		_overlay.setPreferredSize(new Dimension(200, 360));
+		_allInfo.add(_overlay, BorderLayout.SOUTH);
 		add(_allInfo, BorderLayout.WEST);
 		Color backgroundColor = new Color(70, 73, 74);
 		_fileInfo.setBackground(backgroundColor);
-		
 		add(_mediaPlayerHolder, BorderLayout.CENTER);
+		
+		_audioPlayerHolder.add(_audioPlayer, BorderLayout.CENTER);
+		
+		_allInfo.add(_audioPlayerHolder, BorderLayout.CENTER);
+		
+		
 	}
 	
 	public void refreshMidPane() {
@@ -56,7 +64,6 @@ public class MidPanelHolder extends JPanel {
 
 		Color backgroundColor = new Color(70, 73, 74);
 		_fileInfo.setBackground(backgroundColor);
-
 		_mediaPlayerHolder = new MediaPlayer();
 		_fileInfo.setPreferredSize(new Dimension(200, 200));
 		

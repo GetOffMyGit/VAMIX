@@ -21,6 +21,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -30,20 +31,18 @@ public class MenuBar extends JPanel implements ActionListener {
 	private JMenuBar _fileTab = new JMenuBar();
 	private JMenuBar _editAudioTab = new JMenuBar();
 	private JMenuBar _editTextTab = new JMenuBar();
-	private JMenuBar _downloadTab = new JMenuBar();
 	
 	private JMenu _fileMenu = new JMenu("File");
 	private JMenu _editAudioMenu = new JMenu("Edit Audio");
 	private JMenu _editTextMenu = new JMenu("Edit Text");
-	private JMenu _downloadMenu = new JMenu("Download");
 	
 	private JMenuItem _openFile = new JMenuItem("Open File");
 	private JMenuItem _render = new JMenuItem("Render");
+	private JMenuItem _download = new JMenuItem("Download");
 	private JMenuItem _stripAudio = new JMenuItem("Strip Audio");
 	private JMenuItem _replaceAudio = new JMenuItem("Replace Audio");
 	private JMenuItem _overlayAudio = new JMenuItem("Overlay Audio");
 	private JMenuItem _editText = new JMenuItem("Edit Text");
-	private JMenuItem _download = new JMenuItem("Download");
 	private DownloadFrame dl = null;
 	private CurrentFile _currentFile;
 	private MidPanelHolder _midPanelHolder;
@@ -61,39 +60,10 @@ public class MenuBar extends JPanel implements ActionListener {
 		_editAudioTab.setBackground(backgroundColor);
 		_editTextTab.setBackground(backgroundColor);
 		_editTextTab.setBackground(backgroundColor);
-		_downloadTab.setBackground(backgroundColor);
 		
 		_fileMenu.setForeground(textColor);
 		_editAudioMenu.setForeground(textColor);
 		_editTextMenu.setForeground(textColor);
-		_downloadMenu.setForeground(textColor);
-		
-	/*	_openFile.setBackground(backgroundColor);
-		_save.setBackground(backgroundColor);
-		_stripAudio.setBackground(backgroundColor);
-		_overlayAudio.setBackground(backgroundColor);
-		_editText.setBackground(backgroundColor);
-		_download.setBackground(backgroundColor);
-		
-		
-		
-		_openFile.setBorderPainted(false);
-		_openFile.setContentAreaFilled(false);
-		
-		_save.setBorderPainted(false);
-		_save.setContentAreaFilled(false);
-		
-		_stripAudio.setBorderPainted(false);
-		_stripAudio.setContentAreaFilled(false);
-		
-		_overlayAudio.setBorderPainted(false);
-		_overlayAudio.setContentAreaFilled(false);
-		
-		_editText.setBorderPainted(false);
-		_editText.setContentAreaFilled(false);
-		
-		_download.setBorderPainted(false);
-		_download.setContentAreaFilled(false); */
 		
 		_midPanelHolder = midPanelHolder;
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
@@ -104,14 +74,18 @@ public class MenuBar extends JPanel implements ActionListener {
 		
 
 		_fileMenu.add(_render);		
+
+		
+		
+		_download.addActionListener(this);
+		_fileMenu.add(_download);
+
 		
 		_editAudioMenu.add(_stripAudio);
 		_editAudioMenu.add(_replaceAudio);
 		_editAudioMenu.add(_overlayAudio);
 		_editTextMenu.add(_editText);
-		_downloadMenu.add(_download);
 		
-		_download.addActionListener(this);
 		_stripAudio.addActionListener(this);
 		_replaceAudio.addActionListener(this);
 		_overlayAudio.addActionListener(this);
@@ -120,16 +94,16 @@ public class MenuBar extends JPanel implements ActionListener {
 		_fileTab.add(_fileMenu);
 		_editAudioTab.add(_editAudioMenu);
 		_editTextTab.add(_editTextMenu);
-		_downloadTab.add(_downloadMenu);
 		
 		
 		
 		add(_fileTab);
 		add(_editAudioTab);
 		add(_editTextTab);
-		add(_downloadTab);
 		
 		_projectInfo = ProjectInfo.getInstance();
+		
+		
 	}
 
 	@Override

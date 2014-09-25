@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 public class Lavitasy extends JFrame {
 	private JPanel _top;
 	private JPanel _mid = new MidPanelHolder();
-//	private JPanel _bot = new Timeline();
 	
 	public static void main(String[] args) {
 		Lavitasy lavitasy = new Lavitasy();
@@ -33,6 +32,5 @@ public class Lavitasy extends JFrame {
 		
 		add(_top, BorderLayout.NORTH);
 		add(_mid, BorderLayout.CENTER);
-	//	add(_bot, BorderLayout.SOUTH);
 	}
 }

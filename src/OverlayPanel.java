@@ -26,7 +26,8 @@ public class OverlayPanel  extends JPanel  implements ActionListener  {
 	private JPanel _buttons = new JPanel(new FlowLayout());
 
 	public OverlayPanel() {
-		super(new BorderLayout());
+		setLayout(new BorderLayout());
+		
 		_projectInfo = ProjectInfo.getInstance();
 		_overlaylist = new JList(_projectInfo.getOverlays());
 		
@@ -36,6 +37,9 @@ public class OverlayPanel  extends JPanel  implements ActionListener  {
 	    	_delete.setEnabled(false);
 
 	    }
+
+		
+
 		Color backgroundColor = new Color(70, 73, 74);
 		_buttons.setBackground(backgroundColor);
 		
@@ -49,10 +53,10 @@ public class OverlayPanel  extends JPanel  implements ActionListener  {
 		// only one selection
 		_overlaylist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		_overlaylist.setLayoutOrientation(JList.VERTICAL);
-
-		JScrollPane listScroller = new JScrollPane(_overlaylist);
-		listScroller.setPreferredSize(new Dimension(200,800));
 		
+		JScrollPane listScroller = new JScrollPane(_overlaylist);
+
+		listScroller.setPreferredSize(new Dimension(200, 200));
 		add(listScroller, BorderLayout.CENTER);
 		_buttons.add(_add);
 		_buttons.add(_delete);

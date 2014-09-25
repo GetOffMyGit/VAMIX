@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,7 +29,7 @@ public class DownloadFrame extends JFrame implements ActionListener {
 	private JCheckBox openSource = new JCheckBox("Open source? ");
 	private JButton dlBtn = new JButton("Download");
 	private JPanel dlInfo = new JPanel();
-	private JPanel proceessInfo = new JPanel();
+	private JPanel processInfo = new JPanel();
 	private JProgressBar progressBar = new JProgressBar();
 	private JButton cancelBtn = new JButton("Cancel");
 	private JLabel infoBar = new JLabel("");
@@ -41,8 +42,23 @@ public class DownloadFrame extends JFrame implements ActionListener {
 		setTitle("Lavitasy Download");
 		setLayout(new BorderLayout());
 		setVisible(true);
-		setSize(new Dimension(450, 120));
+		setPreferredSize(new Dimension(450, 117));
+		pack();
 		dlBtn.addActionListener(this);
+		
+		Color backgroundColor = new Color(70, 73, 74);
+		dlInfo.setBackground(backgroundColor);
+		processInfo.setBackground(backgroundColor);
+		openSource.setBackground(backgroundColor);
+		
+		Color textColor = new Color(203, 205, 207);
+		urlLabel.setForeground(textColor);
+		openSource.setForeground(textColor);
+		
+		Color buttonColor = new Color(220, 222, 224);
+		dlBtn.setBackground(buttonColor);
+		cancelBtn.setBackground(buttonColor);
+		cancelBtn.setBorderPainted(false);
 		
 		dlInfo.setLayout(new BorderLayout());
 		dlInfo.add(urlLabel, BorderLayout.WEST);
@@ -53,12 +69,12 @@ public class DownloadFrame extends JFrame implements ActionListener {
 		add(dlInfo, BorderLayout.NORTH);
 		
 		cancelBtn.addActionListener(this);
-		proceessInfo.setLayout(new BorderLayout());
-		proceessInfo.add(progressBar, BorderLayout.NORTH);
-		proceessInfo.add(infoBar, BorderLayout.WEST);
-		proceessInfo.add(cancelBtn, BorderLayout.EAST);
+		processInfo.setLayout(new BorderLayout());
+		processInfo.add(progressBar, BorderLayout.NORTH);
+		processInfo.add(infoBar, BorderLayout.WEST);
+		processInfo.add(cancelBtn, BorderLayout.EAST);
 		
-		add(proceessInfo, BorderLayout.SOUTH);
+		add(processInfo, BorderLayout.SOUTH);
 	}
 	
 	@Override
