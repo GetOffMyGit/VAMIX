@@ -40,11 +40,11 @@ public class ProjectInfo {
 		return _overlays;
 	}
 	
-<<<<<<< HEAD
+
 	public void removeOverlay(int index) {
 		_overlays.remove(index);
 	}
-=======
+	
 	public void adjustVolume(int initialVolume) {
 		int inputVolume =initialVolume / 100;
 		String stringInput = Integer.toString(inputVolume);
@@ -56,7 +56,6 @@ public class ProjectInfo {
 		return _adjustVolume;
 	}
 	
->>>>>>> 34911282d97da07a509eeb0c36921a5edb9a11fd
 	// singleton class accessed by evertyhing
 	
 	// methods 
