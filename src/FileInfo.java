@@ -1,13 +1,12 @@
-<<<<<<< HEAD
+
 
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-=======
+
 import java.awt.Color;
 import java.awt.GridLayout;
->>>>>>> 8dd2afbf5f202443fa503d90e9c868926ea7c3e5
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;

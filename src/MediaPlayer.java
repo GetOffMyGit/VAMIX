@@ -53,10 +53,7 @@ public class MediaPlayer extends JPanel implements ActionListener {
 	private CurrentFile _currentFile = CurrentFile.getInstance();
 
 	public MediaPlayer() {
-<<<<<<< HEAD
 		
-		NativeLibrary.addSearchPath(
-=======
 	/*	NativeLibrary.addSearchPath(
 >>>>>>> 8dd2afbf5f202443fa503d90e9c868926ea7c3e5
 				RuntimeUtil.getLibVlcLibraryName(), "/usr/lib"
