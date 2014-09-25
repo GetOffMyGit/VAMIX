@@ -29,7 +29,15 @@ public class AudioFile {
 					String[] streamSplit = line.split(" ");
 					for(int i = 0; i < streamSplit.length; i++) {
 						if(streamSplit[i].equals("Video:")) {
-							_type = "Video";
+							if(streamSplit[i+1].equals("mjpeg,")) {
+								_type = "Audio";
+							} else {
+								if(_type == null) {
+									_type = "Video";
+								} else {
+									_type = "Video with Audio";
+								}
+							}
 						} else if(streamSplit[i].equals("Audio:")) {
 							if(_type == null) {
 								_type = "Audio";

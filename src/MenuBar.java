@@ -127,10 +127,10 @@ public class MenuBar extends JPanel implements ActionListener {
 				_currentFile.resetInstance();
 				_currentFile.setInstance(theFile);
 				if(_currentFile.getType() == null) {
-					JOptionPane.showMessageDialog(this, "Please select an audio or video file");
+					JOptionPane.showMessageDialog(this, "Please select a video file");
 					_currentFile = null;
-				} else if ((!(_currentFile.getType().equals("Video")) && (_currentFile.getType().equals("Audio") && (_currentFile.getType().equals("Video with Audio"))))) {
-					JOptionPane.showMessageDialog(this, "Please select an audio or video file");
+				} else if (!((_currentFile.getType().equals("Video")) || (_currentFile.getType().equals("Video with Audio")))) {
+					JOptionPane.showMessageDialog(this, "Please select a video file");
 					_currentFile = null;
 				} else {
 					_midPanelHolder.refreshMidPane();

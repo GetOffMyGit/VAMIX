@@ -178,7 +178,7 @@ public class AudioPlayer extends JPanel implements ActionListener {
 					JOptionPane.showMessageDialog(null, "Please select an audio");
 					_audioFile = null;
 				} else if ((!(_audioFile.getType().equals("Audio")))) {
-					JOptionPane.showMessageDialog(null, "Please select an audio or video file");
+					JOptionPane.showMessageDialog(null, "Please select an audio file");
 					_audioFile = null;
 				} else {
 					_fileName.setText("Name: " + _audioFile.getName());
@@ -188,7 +188,7 @@ public class AudioPlayer extends JPanel implements ActionListener {
 		if(ae.getSource() == _play) {
 			if(!_video.canPause()) {
 				if(_chosenFile == null) {
-					JOptionPane.showMessageDialog(null, "Please open an audio or video file before playing");
+					JOptionPane.showMessageDialog(null, "Please open an audio file before playing");
 					return;
 				} else {
 					try {

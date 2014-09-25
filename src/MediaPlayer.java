@@ -210,7 +210,7 @@ public class MediaPlayer extends JPanel implements ActionListener {
 			if(!_video.canPause()) {
 				_currentFile = CurrentFile.getInstance();
 				if(_currentFile.getType() == null) {
-					JOptionPane.showMessageDialog(null, "Please open an audio or video file before playing");
+					JOptionPane.showMessageDialog(null, "Please open a video file before playing");
 					return;
 				} else {
 					Image pauseImage;
