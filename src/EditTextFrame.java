@@ -2,20 +2,24 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
+import javax.swing.Timer;
 
 
-public class EditTextFrame extends JFrame {
+public class EditTextFrame extends JFrame implements ActionListener {
 	private JPanel _introPanel = new JPanel();
 	private JPanel _outroPanel = new JPanel();
 	private JPanel _introControl = new JPanel();
@@ -41,6 +45,10 @@ public class EditTextFrame extends JFrame {
 	private JLabel _outroSizeLabel = new JLabel("Size:");
 	private JLabel _introTextLabel = new JLabel("Introduction Text:");
 	private JLabel _outroTextLabel = new JLabel("Exiting Text:");
+	
+	private JButton _preview = new JButton("Preview");
+	private Timer _clock = new Timer(11000, this);
+	private previewWorker _previewWorker;
 
 	public EditTextFrame() {
 		setTitle("Edit Text");
@@ -57,8 +65,8 @@ public class EditTextFrame extends JFrame {
 		_outroTextPanel.setLayout(new BorderLayout());
 
 		String[] fonts = { "Font 1", "Font 2", "Font 3", "Font 4" };
-		String[] colors = { "Color 1", "Color 2", "Color 3", "Color 4" };
-		String[] size = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" };
+		String[] colors = { "Red", "Orange", "Yellow", "Green" };
+		String[] size = { "14", "16", "18", "20", "22", "24", "26", "28", "30", "32"};
 
 		_introFont = new JComboBox(fonts);
 		_introColor = new JComboBox(colors);
@@ -112,24 +120,52 @@ public class EditTextFrame extends JFrame {
 
 		add(_introPanel, BorderLayout.NORTH);
 		add(_outroPanel, BorderLayout.CENTER);
+		add(_preview, BorderLayout.SOUTH);
+		_preview.addActionListener(this);
+	}
+	
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		// when clock ticks
+		if (e.getSource() == _clock) {
+			_clock.stop();
+			System.out.print("heello");
+			_previewWorker.destroyProcess();
+		} 
+		if (e.getSource() == _preview){
+			String color = (String)_introColor.getSelectedItem();
+			String size =  (String)_introSize.getSelectedItem();
+			String text = (String)_introText.getText();
+			String cmd = "avplay -i " + CurrentFile.getInstance().getPath() +
+					" -t 0:00:10 -vf drawtext=\"fontfile=/usr/share/fonts/truetype/freefont/FreeSerif.ttf: text='" + text + "':" + ""
+							+ "fontsize=" + size +": fontcolor=" + color + "\"";
+			_clock.start();
+			_previewWorker = new previewWorker(cmd);
+			_previewWorker.execute();
+		}
+		
+		
 	}
 	
 	class previewWorker extends SwingWorker<Void, Integer> {
 		private int _exitStatus;
 		private String _outputName;
-		public previewWorker() {
+		Process process = null;
+		String _cmd;
+		public previewWorker(String cmd) {
+			_cmd = cmd;
 		}
 		
 		@Override
 		protected Void doInBackground() throws Exception {		
 			// progress line bars are seen as dots
 			// Suppress quotation marks
-			String cmd = "avplay -i " + CurrentFile.getInstance().getPath();
-					//" -t 0:00:10  -vf drawtext=""fontfile=/usr/share/fonts/truetype/freefont/FreeSerif.ttf: text='xxx': fontsize=24: fontcolor=yellow""";
-			ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+			// t is duration
+			ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", _cmd);
 			
 			builder.redirectErrorStream(true);
-			Process process = null;
 			try {
 				process = builder.start();
 			} catch (IOException e1) {
@@ -146,6 +182,10 @@ public class EditTextFrame extends JFrame {
 	     protected void process(List<Integer> chunks) {
 
 	     }
+		 
+		 public void destroyProcess() {
+	            process.destroy();
+		 }
 		 
 	}
 }

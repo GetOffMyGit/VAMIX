@@ -163,7 +163,6 @@ public class ProjectInfo {
 				}
 				
 				process.waitFor();
-				System.out.println("jhl");
 				
 	            process.destroy();
 			}
