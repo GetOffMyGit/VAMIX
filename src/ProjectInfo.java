@@ -25,11 +25,18 @@ public class ProjectInfo {
 	private DefaultListModel _overlays;
 	private static ProjectInfo _instance;
 	private boolean _isStripped = false;
+	private boolean _isReplaced = false;
 	private List<String> _commands;
+	private AudioFile _newAudio;
 	protected ProjectInfo() {
 		// create 
 		_overlays = new DefaultListModel<AudioFile>();
 		_commands = new ArrayList<String>();
+		_isStripped = false;
+		_currentFile = CurrentFile.getInstance();
+		
+		_newAudio = null;
+		_isReplaced = false;
 	}
 	
 	public static ProjectInfo getInstance() {
@@ -39,12 +46,20 @@ public class ProjectInfo {
 		return _instance;
 	}
 	
+	public static void reset() {
+		_instance = new ProjectInfo();
+	}
+	
 	public void addOverlay(AudioFile f) {
 		_overlays.addElement(f);
 	}
 	
 	public ListModel getOverlays() {
 		return _overlays;
+	}
+	
+	public boolean isStripped() {
+		return _isStripped;
 	}
 	
 
@@ -63,15 +78,27 @@ public class ProjectInfo {
 		return _adjustVolume;
 	}
 	
+	public void Stripped() {
+		_isStripped = true;
+	}
+	
+	public void Replace(AudioFile replaceAudio) {
+		_isReplaced = true;
+		_newAudio = replaceAudio;
+		
+	}
+	
 	public void audioCombine() {
 		String command = "avconv ";
-		int inputs = 0;
-		//String cmd = "avconv -i " + _currentFile.getPath() + " -map 0:a ~/"+ _outputName;
-		if (!(_isStripped)) {
+		int inputs = 0; 
+		if (_isReplaced) {
+			command += "-i " + _newAudio.getPath() + " ";
+			inputs++;
+		} else if (!(_isStripped)) {
 			// obtains audio from video and creates a temporary file in program space
 			String cmd = "avconv -i " + _currentFile.getPath() + " -map 0:a .temp1.mp3";
 			_commands.add(cmd);
-			command += "-i ~/.temp1.mp3 " ;
+			command += "-i .temp1.mp3 " ;
 			inputs++;
 		}
 
@@ -89,6 +116,7 @@ public class ProjectInfo {
 		command += "-filter_complex amix=inputs=" + inputs + ":duration=longest .temp2.mp3";
 		_commands.add(command);
 	}
+	
 	public void finish() {
 		//delete temp files created
 		File f1 = new File(".temp2.mp3");
@@ -97,21 +125,30 @@ public class ProjectInfo {
 		f2.delete();
 	}
 	
+	public boolean anyChanges() {
+		if (!_isStripped  && !_isReplaced && _overlays.isEmpty()) {
+			return false;
+		} else {
+			return true;	
+		}
+		
+	}
+	
 	public void render(String outputName) {
-		audioCombine();
-		String command = "avconv -i " + _currentFile.getPath() + " -strict experimental -i  .temp2.mp3" 
-		+ " -strict experimental -map 0:v -map 1:a " + System.getProperty("user.home") + System.getProperty("file.separator") + outputName;
-		_commands.add(command);
-		//avconv -i x.mp4 -strict experimental -i a.mp3 -strict experimental -map 0:v -map 1:a output.mp4
-		commandWorker _audioWorker = new commandWorker("LALA");
-		_audioWorker.execute();
+			audioCombine();
+			String command = "avconv -i " + _currentFile.getPath() + " -strict experimental -i  .temp2.mp3" 
+			+ " -strict experimental -map 0:v -map 1:a " + System.getProperty("user.home") + System.getProperty("file.separator") + outputName;
+			_commands.add(command);
+			//avconv -i x.mp4 -strict experimental -i a.mp3 -strict experimental -map 0:v -map 1:a output.mp4
+			commandWorker _audioWorker = new commandWorker();
+			_audioWorker.execute();
 	}
 	
 	class commandWorker extends SwingWorker<Void, Integer> {
 		private int _exitStatus;
 		private String _outputName;
-		public commandWorker(String outputName) {
-			_outputName = outputName;
+		public commandWorker() {
+			
 		}
 		
 		@Override
@@ -146,6 +183,7 @@ public class ProjectInfo {
 			 finish();
 		 }
 	}
+
 
 	// singleton class accessed by evertyhing
 	

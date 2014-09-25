@@ -29,7 +29,7 @@ public class OverlayPanel  extends JPanel  implements ActionListener  {
 		setLayout(new BorderLayout());
 		
 		_projectInfo = ProjectInfo.getInstance();
-		_overlaylist = new JList(_projectInfo.getOverlays());
+		_overlaylist = new JList(ProjectInfo.getInstance().getOverlays());
 		
 
 		int size = _projectInfo.getOverlays().getSize();
