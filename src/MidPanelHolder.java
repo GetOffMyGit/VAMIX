@@ -25,14 +25,17 @@ public class MidPanelHolder extends JPanel {
 	private JPanel _fileInfo = new FileInfo();
 	private JPanel _mediaPlayerHolder = new MediaPlayer();
 	private JPanel _controls = new JPanel();
-	private EmbeddedMediaPlayerComponent _mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
-	private EmbeddedMediaPlayer _video = _mediaPlayerComponent.getMediaPlayer();
+//	private EmbeddedMediaPlayerComponent _mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
+//	private EmbeddedMediaPlayer _video = _mediaPlayerComponent.getMediaPlayer();
+//	private JPanel _mediaPlayerHolder = new JPanel();
 	
 	
 	public MidPanelHolder() {
 		setLayout(new BorderLayout());
 		
 		_fileInfo.setPreferredSize(new Dimension(200, 450));
+		Color backgroundColor = new Color(70, 73, 74);
+		_fileInfo.setBackground(backgroundColor);
 		
 		add(_fileInfo, BorderLayout.WEST);
 		add(_mediaPlayerHolder, BorderLayout.CENTER);

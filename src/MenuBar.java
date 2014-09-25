@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -52,6 +53,48 @@ public class MenuBar extends JPanel implements ActionListener {
 	private ProjectInfo _projectInfo;
 	
 	public MenuBar(MidPanelHolder midPanelHolder) {
+		Color backgroundColor = new Color(42, 46, 53);
+		Color textColor = new Color(203, 205, 207);
+		setBackground(backgroundColor);
+		
+		_fileTab.setBackground(backgroundColor);
+		_editAudioTab.setBackground(backgroundColor);
+		_editTextTab.setBackground(backgroundColor);
+		_editTextTab.setBackground(backgroundColor);
+		_downloadTab.setBackground(backgroundColor);
+		
+		_fileMenu.setForeground(textColor);
+		_editAudioMenu.setForeground(textColor);
+		_editTextMenu.setForeground(textColor);
+		_downloadMenu.setForeground(textColor);
+		
+	/*	_openFile.setBackground(backgroundColor);
+		_save.setBackground(backgroundColor);
+		_stripAudio.setBackground(backgroundColor);
+		_overlayAudio.setBackground(backgroundColor);
+		_editText.setBackground(backgroundColor);
+		_download.setBackground(backgroundColor);
+		
+		
+		
+		_openFile.setBorderPainted(false);
+		_openFile.setContentAreaFilled(false);
+		
+		_save.setBorderPainted(false);
+		_save.setContentAreaFilled(false);
+		
+		_stripAudio.setBorderPainted(false);
+		_stripAudio.setContentAreaFilled(false);
+		
+		_overlayAudio.setBorderPainted(false);
+		_overlayAudio.setContentAreaFilled(false);
+		
+		_editText.setBorderPainted(false);
+		_editText.setContentAreaFilled(false);
+		
+		_download.setBorderPainted(false);
+		_download.setContentAreaFilled(false); */
+		
 		_midPanelHolder = midPanelHolder;
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		

@@ -1,4 +1,6 @@
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -19,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JSlider;
 import javax.swing.Timer;
+import javax.swing.UIManager;
 
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
@@ -31,8 +34,9 @@ import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 public class MediaPlayer extends JPanel implements ActionListener {
 
-	private EmbeddedMediaPlayerComponent _mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
-	private EmbeddedMediaPlayer _video = _mediaPlayerComponent.getMediaPlayer();
+//	private EmbeddedMediaPlayerComponent _mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
+//	private EmbeddedMediaPlayer _video = _mediaPlayerComponent.getMediaPlayer();
+	private JPanel _mediaPlayerComponent = new JPanel();
 	private JButton _play = new JButton();
 	private JButton _pause = new JButton();
 	private JButton _stop = new JButton();
@@ -49,16 +53,19 @@ public class MediaPlayer extends JPanel implements ActionListener {
 	private CurrentFile _currentFile = CurrentFile.getInstance();
 
 	public MediaPlayer() {
-		NativeLibrary.addSearchPath(
+	/*	NativeLibrary.addSearchPath(
 				RuntimeUtil.getLibVlcLibraryName(), "/usr/lib"
 				);
 
-		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
+		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class); */
 
 		setLayout(new BorderLayout());
+		
+		_mediaPlayerComponent.setBackground(Color.black);
 
 		//Media player and control dimensions
 		_mediaPlayerComponent.setPreferredSize(new Dimension(800, 470)); //475
+		
 		_controls.setPreferredSize(new Dimension(800, 60));
 
 		//Create and start clock
@@ -120,6 +127,21 @@ public class MediaPlayer extends JPanel implements ActionListener {
 
 		//Slider configurations
 		_volumeControl = new JSlider();
+		UIManager.getLookAndFeelDefaults().put("Slider.horizontalThumbIcon", new ImageIcon() {
+			@Override
+			public int getIconHeight() {
+				return 0;
+			}
+			
+			@Override public int getIconWidth() {
+				return 0;
+			}
+			
+		//	@Override
+		//	public void paintIcon(Component c, Graphics g, int x, int y) {
+				
+		//	}
+		}); 
 		
 		//Display video duration on the label
 		if(_currentFile.getDuration() != null) {
@@ -127,6 +149,18 @@ public class MediaPlayer extends JPanel implements ActionListener {
 			String duration = "\\ " + durationParts[0];
 			_durationLabel.setText(duration);
 		}
+		
+		//Set colour for control panel
+		Color backgroundColor = new Color(70, 73, 74);
+		Color textColor = new Color(203, 205, 207);
+		_controls.setBackground(backgroundColor);
+		_durationLabel.setBackground(backgroundColor);
+		_volumeControl.setBackground(backgroundColor);
+		
+		_durationLabel.setForeground(textColor);
+		_timer.setForeground(textColor);
+		
+		
 		
 		//Add control components to the control panel
 		_controls.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -159,7 +193,7 @@ public class MediaPlayer extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent ae) {
 		if(ae.getSource() == _play) {
-			if(!_video.canPause()) {
+		/*	if(!_video.canPause()) {
 				_currentFile = CurrentFile.getInstance();
 				if(_currentFile.getType() == null) {
 					JOptionPane.showMessageDialog(null, "Please open an audio or video file before playing");
@@ -169,7 +203,7 @@ public class MediaPlayer extends JPanel implements ActionListener {
 				}
 			} else {
 				_video.pause();
-			}
+			} */
 			_play.setEnabled(false);
 			_stop.setEnabled(true);
 			_pause.setEnabled(true);
@@ -177,11 +211,11 @@ public class MediaPlayer extends JPanel implements ActionListener {
 			_fastForward.setEnabled(true);
 			_rewind.setEnabled(true);
 		} else if(ae.getSource() == _pause) {
-			_video.pause();
+	//		_video.pause();
 			_play.setEnabled(true);
 			_pause.setEnabled(false);
 		} else if(ae.getSource() == _stop) {
-			_video.stop();
+	//		_video.stop();
 			_stop.setEnabled(false);
 			_play.setEnabled(true);
 			_pause.setEnabled(false);
@@ -191,17 +225,17 @@ public class MediaPlayer extends JPanel implements ActionListener {
 		} else if(ae.getSource() == _fastForward) {
 			_fastForward.setEnabled(false);
 			while(!_fastForward.isEnabled()) {
-				_video.skip(1000);
+	//			_video.skip(1000);
 			}
 		} else if(ae.getSource() == _rewind) {
-			_video.skip(-1000);
+	//		_video.skip(-1000);
 		} else if(ae.getSource() == _mute) {
-			_video.mute();
+	//		_video.mute();
 		} else if(ae.getSource() == _clock) {
-			int time = (int) (_video.getTime()/1000.0);
-			_progressBar.setValue(time);
-			String stringTime = formatTime(time);
-			_timer.setText(stringTime);
+	//		int time = (int) (_video.getTime()/1000.0);
+	//		_progressBar.setValue(time);
+	//		String stringTime = formatTime(time);
+	//		_timer.setText(stringTime);
 		}
 	}
 	
