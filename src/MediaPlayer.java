@@ -56,7 +56,7 @@ public class MediaPlayer extends JPanel implements ActionListener {
 	private boolean _isFastForward = false;
 	private boolean _isRewind = false;
 	private int _setVolume = 100;
-	private ProjectInfo _projectInfo = ProjectInfo.getInstance();
+	private ProjectInfo _projectInfo;
 
 	private CurrentFile _currentFile = CurrentFile.getInstance();
 
@@ -67,6 +67,7 @@ public class MediaPlayer extends JPanel implements ActionListener {
 				);
 
 		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
+		_projectInfo = ProjectInfo.getInstance();
 
 		setLayout(new BorderLayout());
 		_mediaPlayerComponent.revalidate();

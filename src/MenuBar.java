@@ -46,6 +46,7 @@ public class MenuBar extends JPanel implements ActionListener {
 	private DownloadFrame dl = null;
 	private CurrentFile _currentFile;
 	private MidPanelHolder _midPanelHolder;
+	private EditTextFrame _editTextFrame;
 	
 	
 	private stripAudioWorker _audioWorker;
@@ -87,6 +88,7 @@ public class MenuBar extends JPanel implements ActionListener {
 		_replaceAudio.addActionListener(this);
 		_overlayAudio.addActionListener(this);
 		_save.addActionListener(this);
+		_editText.addActionListener(this);
 		
 		_fileTab.add(_fileMenu);
 		_editAudioTab.add(_editAudioMenu);
@@ -190,6 +192,17 @@ public class MenuBar extends JPanel implements ActionListener {
 			// need swing worker
 			
 
+		}
+		if (ae.getSource() == _editText) {
+			if(_editTextFrame == null) {
+				_editTextFrame = new EditTextFrame();
+			} else {
+				if(_editTextFrame.isActive()) {
+					_editTextFrame.toFront();
+				} else {
+					_editTextFrame = new EditTextFrame();
+				}
+			}
 		}
 	}
 	

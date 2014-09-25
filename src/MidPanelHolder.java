@@ -65,7 +65,7 @@ public class MidPanelHolder extends JPanel {
 		Color backgroundColor = new Color(70, 73, 74);
 		_fileInfo.setBackground(backgroundColor);
 		_mediaPlayerHolder = new MediaPlayer();
-		_fileInfo.setPreferredSize(new Dimension(200, 200));
+		_fileInfo.setPreferredSize(new Dimension(200, 80));
 		
 		_allInfo.add(_fileInfo, BorderLayout.NORTH);
 		add(_mediaPlayerHolder, BorderLayout.CENTER);

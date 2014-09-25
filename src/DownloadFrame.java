@@ -36,8 +36,8 @@ public class DownloadFrame extends JFrame implements ActionListener {
 	private dlWorker worker = null;
 	private boolean _isWorking = false;
 
-	
-	
+
+
 	public DownloadFrame() {
 		setTitle("Lavitasy Download");
 		setLayout(new BorderLayout());
@@ -45,58 +45,58 @@ public class DownloadFrame extends JFrame implements ActionListener {
 		setPreferredSize(new Dimension(450, 117));
 		pack();
 		dlBtn.addActionListener(this);
-		
+
 		Color backgroundColor = new Color(70, 73, 74);
 		dlInfo.setBackground(backgroundColor);
 		processInfo.setBackground(backgroundColor);
 		openSource.setBackground(backgroundColor);
-		
+
 		Color textColor = new Color(203, 205, 207);
 		urlLabel.setForeground(textColor);
 		openSource.setForeground(textColor);
-		
+
 		Color buttonColor = new Color(220, 222, 224);
 		dlBtn.setBackground(buttonColor);
 		cancelBtn.setBackground(buttonColor);
 		cancelBtn.setBorderPainted(false);
-		
+
 		dlInfo.setLayout(new BorderLayout());
 		dlInfo.add(urlLabel, BorderLayout.WEST);
 		dlInfo.add(url, BorderLayout.CENTER);
 		dlInfo.add(openSource, BorderLayout.EAST);
 		dlInfo.add(dlBtn, BorderLayout.SOUTH);
-		
+
 		add(dlInfo, BorderLayout.NORTH);
-		
+
 		cancelBtn.addActionListener(this);
 		processInfo.setLayout(new BorderLayout());
 		processInfo.add(progressBar, BorderLayout.NORTH);
 		processInfo.add(infoBar, BorderLayout.WEST);
 		processInfo.add(cancelBtn, BorderLayout.EAST);
-		
+
 		add(processInfo, BorderLayout.SOUTH);
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == dlBtn) {
 			String fileName = findFileName();
-	
+
 			if (fileName == null) {
 				JOptionPane.showMessageDialog(this, "ERROR: " + " no valid URL has been given.");
 				return;
 			}
-			
+
 			//check for open source
 			if (!openSource.isSelected()) {
 				JOptionPane.showMessageDialog(this, "ERROR: " + fileName + " is not open source.");
 				return;
 			}
-			
+
 			if (_isWorking == true) {
 				int reply = JOptionPane.showConfirmDialog(this, "ERROR: " + worker._filename + " is already downloading." + System.getProperty("line.separator") 
 						+ "Stop downloading " + worker._filename + "?", "Stop downloading", JOptionPane.YES_NO_OPTION);
-				
+
 				if (reply == JOptionPane.NO_OPTION) {
 					return;
 				}
@@ -106,8 +106,8 @@ public class DownloadFrame extends JFrame implements ActionListener {
 					worker.cancelDl();
 				}
 			}
-			
-			
+
+
 			String filePath = System.getProperty("user.home") + System.getProperty("file.separator") + fileName;
 			File f = new File(filePath);
 			// check for existing file
@@ -115,7 +115,7 @@ public class DownloadFrame extends JFrame implements ActionListener {
 				String[] buttons = { "Resume", "Override", "Cancel" };
 				String error = "ERROR: " + fileName + " already exists";
 				int reply = JOptionPane.showOptionDialog(this, error, "ERROR", 0, 0, null, buttons, buttons[0]);
-				
+
 				if (buttons[reply].equals("Cancel")) { return;
 				} else if (buttons[reply].equals("Resume")) {
 					dl(fileName, Options.RESUME);
@@ -134,20 +134,20 @@ public class DownloadFrame extends JFrame implements ActionListener {
 				worker.cancelDl();
 			}
 		}
-		
+
 	}
 	// extracts last part of url too generate file name
 	private String findFileName() {
 		String filename = null;
 		String urlLink = url.getText();
-		
+
 		if (urlLink.equals("")) {
 			return null;
 		}
 
 		String cmd = "basename \"" + urlLink + "\"";
 		ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-		
+
 		Process process = null;
 		builder.redirectErrorStream(true);
 		try {
@@ -166,30 +166,30 @@ public class DownloadFrame extends JFrame implements ActionListener {
 		process.destroy();
 		return filename;
 	}
-	
+
 	private void dl(String fileName, Options o)
 	{
 		// create worker to download on another thread
 		worker = new dlWorker(fileName, o);
 		worker.execute();
 	}
-	
+
 	private enum Options {
 		NEW (""), RESUME ("-c ");
-		
+
 		private final String addon;
 		private Options(String s) {
-	        addon = s;
-	    }
-		
+			addon = s;
+		}
+
 		public String toString(){
-		       return addon;
+			return addon;
 		}
 	}
-	
+
 	private void finishDl() {
 		if (!worker.cancelled) {
-			
+
 			//TODO: exit status, ASK PAUL ^_^
 			if (worker._exitStatus == 0) {
 				JOptionPane.showMessageDialog(this, "Successful download of " + worker._filename + "!");
@@ -200,42 +200,56 @@ public class DownloadFrame extends JFrame implements ActionListener {
 				infoBar.setText("");
 				JOptionPane.showMessageDialog(this, "ERROR encountered, could not download " + worker._filename + ".");
 			}
-		 } else if (worker.alreadyFin == true) {
-			 JOptionPane.showMessageDialog(this, "ERROR: " + worker._filename + " has already finished downloadng.");
-			 
-		 } else {
-			 if (worker._exitStatus == 3) {
-				 
-			 }
-			 // explicitly cancelled
-			 JOptionPane.showMessageDialog(this, worker._filename + " has stopped downloadng.");
-		 }
+		} else if (worker.alreadyFin == true) {
+			JOptionPane.showMessageDialog(this, "ERROR: " + worker._filename + " has already finished downloadng.");
+
+		} else {
+			if (worker._exitStatus == 1) {
+				JOptionPane.showMessageDialog(null, "An error has been encounted");
+			} else if (worker._exitStatus == 2) {
+				JOptionPane.showMessageDialog(null, "Parse Error");
+			} else if (worker._exitStatus == 3) {
+				JOptionPane.showMessageDialog(null, "File I/O Error");
+			} else if (worker._exitStatus == 4) {
+				JOptionPane.showMessageDialog(null, "Network Failure");
+			} else if (worker._exitStatus == 5) {
+				JOptionPane.showMessageDialog(null, "SSL Verification Failure");
+			} else if (worker._exitStatus == 6) {
+				JOptionPane.showMessageDialog(null, "Username/password authentication failure");
+			} else if (worker._exitStatus == 7) {
+				JOptionPane.showMessageDialog(null, "Protocol Error");
+			} else if (worker._exitStatus == 8) {
+				JOptionPane.showMessageDialog(null, "Server Issued an error response");
+			}
+			// explicitly cancelled
+			JOptionPane.showMessageDialog(this, worker._filename + " has stopped downloadng.");
+		}
 	}
-	
+
 	class dlWorker extends SwingWorker<Void, Integer> {
 		private String _filename =  null;
 		private Options _option;
 		private boolean cancelled = false;
 		private boolean alreadyFin = false;
 		private int _exitStatus;
-		
+
 		public dlWorker(String filename, Options o) {
 			_filename = filename;
 			_option = o;
 			_isWorking = true;
 			infoBar.setText("Downloading.. " + _filename + " 0% ");
 		}
-		
+
 		@Override
 		protected Void doInBackground() throws Exception {
 			String urlLink = url.getText();
 			String line;
-			
+
 			// progress line bars are seen as dots
 			// Suppress quotation marks
 			String cmd = "wget " + _option.toString() + "--progress=dot --timeout=5 -P " + System.getProperty("user.home") + " \"" + urlLink + "\"";
 			ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-			
+
 			builder.redirectErrorStream(true);
 			Process process = null;
 			try {
@@ -243,74 +257,74 @@ public class DownloadFrame extends JFrame implements ActionListener {
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-			
+
 			InputStream stdout = process.getInputStream();
 			BufferedReader stdoutBuffered = new BufferedReader(new InputStreamReader(stdout));
-            while ((line = stdoutBuffered.readLine()) != null && !isCancelled()) {
-            	// attempting to resume completed file - error
-            	if ((line.contains("The file is already fully retrieved; nothing to do."))) {
-            		cancelDl();
-            		alreadyFin = true;
-            		publish(0);
-            		return null;
-            	}
-            	// progress line bars are seen as dots and progress % can be found on lines containing these line bars
-            	if (line.contains("..........")) {
-            		// progress of current % 
-            		String[] result = line.split("%");
-                	String current = result[0].substring(result[0].length()-2, result[0].length());
-                	// cases when it is less than 10
-                	if ((current.charAt(0)) == ' ') {
-                		current = current.charAt(1) + "";
-                	} else if (current.equals("00")) {
-                		current = "100";
-                	}
-                	int progress = Integer.parseInt(current);
-                	publish(progress);
-            		
-            	}
-            }
-            
-	            
-            //_exitStatus = process.waitFor();
-            if (!isCancelled()) {
-            	_exitStatus = process.waitFor();
-            	publish(100);
-            // Interrupted error
-            } else {
-            	publish(0);
-            }
-            
-            process.destroy();
+			while ((line = stdoutBuffered.readLine()) != null && !isCancelled()) {
+				// attempting to resume completed file - error
+				if ((line.contains("The file is already fully retrieved; nothing to do."))) {
+					cancelDl();
+					alreadyFin = true;
+					publish(0);
+					return null;
+				}
+				// progress line bars are seen as dots and progress % can be found on lines containing these line bars
+				if (line.contains("..........")) {
+					// progress of current % 
+					String[] result = line.split("%");
+					String current = result[0].substring(result[0].length()-2, result[0].length());
+					// cases when it is less than 10
+					if ((current.charAt(0)) == ' ') {
+						current = current.charAt(1) + "";
+					} else if (current.equals("00")) {
+						current = "100";
+					}
+					int progress = Integer.parseInt(current);
+					publish(progress);
+
+				}
+			}
+
+
+			//_exitStatus = process.waitFor();
+			if (!isCancelled()) {
+				_exitStatus = process.waitFor();
+				publish(100);
+				// Interrupted error
+			} else {
+				publish(0);
+			}
+
+			process.destroy();
 			return null;
 		}
-		
-		 @Override
-	     protected void process(List<Integer> chunks) {
-			 // update the progress bar intermediately
-	         for (int i : chunks) {
-	        	progressBar.setValue(i);
-	     		infoBar.setText("Downloading.. " + _filename + " " + progressBar.getValue()
-	     				+ " %");
 
-	     		if (progressBar.getValue() == 100) {
-	     			infoBar.setText("Completed download of.. " + _filename);
-	     		}
-	         }
-	     }
-		 
-		 @Override
-		 protected void done() {
+		@Override
+		protected void process(List<Integer> chunks) {
+			// update the progress bar intermediately
+			for (int i : chunks) {
+				progressBar.setValue(i);
+				infoBar.setText("Downloading.. " + _filename + " " + progressBar.getValue()
+						+ " %");
+
+				if (progressBar.getValue() == 100) {
+					infoBar.setText("Completed download of.. " + _filename);
+				}
+			}
+		}
+
+		@Override
+		protected void done() {
 			finishDl();
 			_isWorking = false;
-		 }
-		 
-		 
-		 public void cancelDl() {
-			 cancelled = true;
-			 cancel(true);
-		 }
-	
+		}
+
+
+		public void cancelDl() {
+			cancelled = true;
+			cancel(true);
+		}
+
 	}
 
 }
