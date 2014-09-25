@@ -50,7 +50,7 @@ public class MenuBar extends JPanel implements ActionListener {
 	
 	
 	private stripAudioWorker _audioWorker;
-	private ProjectInfo _projectInfo;
+	private static ProjectInfo _projectInfo;
 	
 	public MenuBar(MidPanelHolder midPanelHolder) {
 		Color backgroundColor = new Color(42, 46, 53);
@@ -213,21 +213,7 @@ public class MenuBar extends JPanel implements ActionListener {
 			
 		}
 		if (ae.getSource() == _overlayAudio) {
-			JFileChooser fileChooser = new JFileChooser();
-			int fileChooserReturn = fileChooser.showOpenDialog(null);
-			if(fileChooserReturn == JFileChooser.APPROVE_OPTION) {
-				File theFile = fileChooser.getSelectedFile();
-				AudioFile overlay = new AudioFile(theFile);
-				if(overlay.getType() == null) {
-					JOptionPane.showMessageDialog(null, "Please select an audio file");
-				} else if (!(overlay.getType().equals("Audio"))) {
-					JOptionPane.showMessageDialog(null, "Please select an audio file");
-					
-				} else {
-					_projectInfo.addOverlay(overlay);
-					_midPanelHolder.refreshMidPane();
-				}
-			}
+			OverlayPanel.OverlayAudio();
 			// mix two audio
 			//avconv -i input1 -i input2 -filter_complex amix=input=3:duration=first:dropout_transition=2 output
 			// need swing worker
@@ -235,6 +221,7 @@ public class MenuBar extends JPanel implements ActionListener {
 
 		}
 	}
+	
 	
 	public void finish() {
 		JOptionPane.showMessageDialog(this, "Successful download of !");

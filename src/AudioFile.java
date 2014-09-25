@@ -54,4 +54,10 @@ public class AudioFile {
 	public String getPath() {
 		return _file.getAbsolutePath();
 	}
+	
+	@Override 
+	public String toString() {
+		return this._name;
+	
+	}
 }

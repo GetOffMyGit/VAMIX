@@ -15,7 +15,6 @@ public class ProjectInfo {
 	// text details end
 	// overlay file
 	private DefaultListModel _overlays;
-	
 	private static ProjectInfo _instance;
 	
 	protected ProjectInfo() {
@@ -36,6 +35,10 @@ public class ProjectInfo {
 	
 	public ListModel getOverlays() {
 		return _overlays;
+	}
+	
+	public void removeOverlay(int index) {
+		_overlays.remove(index);
 	}
 	// singleton class accessed by evertyhing
 	
