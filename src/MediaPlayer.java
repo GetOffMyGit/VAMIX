@@ -95,9 +95,14 @@ public class MediaPlayer extends JPanel implements ActionListener {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				int volume = _volumeControl.getValue();
-				_video.setVolume(volume);
-				_setVolume = volume;
-				_projectInfo.adjustVolume(_setVolume);
+				if(!(_currentFile.getName() == null)) {
+					_volumeControl.setEnabled(true);
+					_video.setVolume(volume);
+					_setVolume = volume;
+					_projectInfo.adjustVolume(_setVolume);
+				} else {
+					_volumeControl.setEnabled(false);
+				}
 			}
 		});
 
