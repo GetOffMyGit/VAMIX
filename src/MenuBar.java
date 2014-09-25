@@ -182,7 +182,7 @@ public class MenuBar extends JPanel implements ActionListener {
 					
 				} else {
 					_projectInfo.addOverlay(overlay);
-					//_midPanelHolder.refreshMidPane();
+					_midPanelHolder.refreshMidPane();
 				}
 			}
 			// mix two audio

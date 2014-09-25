@@ -1,9 +1,17 @@
-import java.awt.GridLayout;
+
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 
 
 public class FileInfo extends JPanel {
@@ -12,7 +20,9 @@ public class FileInfo extends JPanel {
 	private JLabel _type;
 	private JLabel _bitRate;
 	private JLabel _durationSeconds;
+	private JLabel _overlaylabel = new JLabel("Audio overlays:");
 	private CurrentFile _currentFile;
+	private JPanel _overlay;
 	
 	
 	public FileInfo() {
@@ -50,5 +60,6 @@ public class FileInfo extends JPanel {
 		add(_type);
 		add(_bitRate);
 		add(_durationSeconds);
+		add(_overlaylabel);
 	}
 }

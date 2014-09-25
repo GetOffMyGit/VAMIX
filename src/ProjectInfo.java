@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.DefaultListModel;
+import javax.swing.ListModel;
+
 
 
 public class ProjectInfo {
@@ -11,13 +14,13 @@ public class ProjectInfo {
 	// text details start
 	// text details end
 	// overlay file
-	private List<AudioFile> _overlays;
+	private DefaultListModel _overlays;
 	
 	private static ProjectInfo _instance;
 	
 	protected ProjectInfo() {
 		// create
-		_overlays = new ArrayList<AudioFile>();
+		_overlays = new DefaultListModel<AudioFile>();
 	}
 	
 	public static ProjectInfo getInstance() {
@@ -28,7 +31,11 @@ public class ProjectInfo {
 	}
 	
 	public void addOverlay(AudioFile f) {
-		_overlays.add(f);
+		_overlays.addElement(f);
+	}
+	
+	public ListModel getOverlays() {
+		return _overlays;
 	}
 	// singleton class accessed by evertyhing
 	
