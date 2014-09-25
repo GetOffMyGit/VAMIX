@@ -46,9 +46,12 @@ public class EditTextFrame extends JFrame implements ActionListener {
 	private JLabel _introTextLabel = new JLabel("Introduction Text:");
 	private JLabel _outroTextLabel = new JLabel("Exiting Text:");
 	
-	private JButton _preview = new JButton("Preview");
+	private JButton _introPreview = new JButton("Preview");
+	private JButton _outroPreview = new JButton("Preview");
 	private Timer _clock = new Timer(11000, this);
 	private previewWorker _previewWorker;
+	
+	//avconv -i a.mp4 -strict experimental -vf drawtext="fontfile=/usr/share/fonts/truetype/freefont/FreeSerif.ttf:text='hello there':draw='lt(t,10)'" p.mp4
 
 	public EditTextFrame() {
 		setTitle("Edit Text");
@@ -92,6 +95,7 @@ public class EditTextFrame extends JFrame implements ActionListener {
 		_introControl.add(_introSizeLabel);
 		_introControl.add(_introSize);
 		_introControl.add(_introText);
+		_introControl.add(_introPreview);
 
 		//Panel for entering text
 		_introTextPanel.add(_introTextLabel, BorderLayout.NORTH);
@@ -109,6 +113,7 @@ public class EditTextFrame extends JFrame implements ActionListener {
 		_outroControl.add(_outroSizeLabel);
 		_outroControl.add(_outroSize);
 		_outroControl.add(_outroText);
+		_outroControl.add(_outroPreview);
 
 		//Panel for entering text
 		_outroTextPanel.add(_outroTextLabel, BorderLayout.NORTH);
@@ -120,8 +125,9 @@ public class EditTextFrame extends JFrame implements ActionListener {
 
 		add(_introPanel, BorderLayout.NORTH);
 		add(_outroPanel, BorderLayout.CENTER);
-		add(_preview, BorderLayout.SOUTH);
-		_preview.addActionListener(this);
+		_introPreview.addActionListener(this);
+		_outroPreview.addActionListener(this);
+		
 	}
 	
 
@@ -131,14 +137,24 @@ public class EditTextFrame extends JFrame implements ActionListener {
 		// when clock ticks
 		if (e.getSource() == _clock) {
 			_clock.stop();
-			System.out.print("heello");
 			_previewWorker.destroyProcess();
 		} 
-		if (e.getSource() == _preview){
+		if (e.getSource() == _introPreview){
 			String color = (String)_introColor.getSelectedItem();
 			String size =  (String)_introSize.getSelectedItem();
 			String text = (String)_introText.getText();
 			String cmd = "avplay -i " + CurrentFile.getInstance().getPath() +
+					" -t 0:00:10 -vf drawtext=\"fontfile=/usr/share/fonts/truetype/freefont/FreeSerif.ttf: text='" + text + "':" + ""
+							+ "fontsize=" + size +": fontcolor=" + color + "\"";
+			_clock.start();
+			_previewWorker = new previewWorker(cmd);
+			_previewWorker.execute();
+		}
+		if (e.getSource() == _outroPreview){
+			String color = (String)_outroColor.getSelectedItem();
+			String size =  (String)_outroSize.getSelectedItem();
+			String text = (String)_outroText.getText();
+			String cmd = "avplay -ss 0:05:00 -i " + CurrentFile.getInstance().getPath() +
 					" -t 0:00:10 -vf drawtext=\"fontfile=/usr/share/fonts/truetype/freefont/FreeSerif.ttf: text='" + text + "':" + ""
 							+ "fontsize=" + size +": fontcolor=" + color + "\"";
 			_clock.start();

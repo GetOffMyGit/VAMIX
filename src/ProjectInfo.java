@@ -91,41 +91,45 @@ public class ProjectInfo {
 		
 	}
 	
-	public void audioCombine() {
+	public void audioCombine(String outputName) {
 		String command = "avconv ";
 		int inputs = 0; 
+		// adds new audio to mixer
 		if (_isReplaced) {
-			command += "-i " + _newAudio.getPath() + " ";
+			command += "-i " + _newAudio.getPath() + " -strict experimental ";
 			inputs++;
-		} else if (!(_isStripped)) {
-			// obtains audio from video and creates a temporary file in program space
-			String cmd = "avconv -i " + _currentFile.getPath() + " -map 0:a .temp1.mp3";
+		}  
+		if (_isStripped) {
+			// obtains just video from video and creates a temporary file in program space
+			String cmd = "avconv -i " + _currentFile.getPath() + " -map 0:v .temp1.mp4";
 			_commands.add(cmd);
-			command += "-i .temp1.mp3 " ;
+			command += "-i .temp1.mp4 -strict experimental " ;
+			//no increase in audio inputs because there would be no audio stream
+			//input is not stripped therefore include the audio
+		} else {
+			command += "-i " + _currentFile.getPath() + " -strict experimental " ;
 			inputs++;
 		}
 
 		if (!(_overlays.isEmpty())) {
 			for (int i = 0; i < _overlays.size(); i ++) {
 				AudioFile f = (AudioFile)_overlays.getElementAt(i);
-				command += "-i " + f.getPath() + " ";
+				command += "-i " + f.getPath() + " -strict experimental ";
 				inputs++;
-				System.out.println(command);
 				//avconv -i input1 -i input2 -filter_complex amix=inputs=3:duration=first:dropout_transition=2 output
 				// need swing worker
 			}
 		}
 		
-		command += "-filter_complex amix=inputs=" + inputs + ":duration=longest .temp2.mp3";
+		command += "-filter_complex amix=inputs=" + inputs + ":duration=longest " + System.getProperty("user.home") 
+				+ System.getProperty("file.separator") + outputName;
 		_commands.add(command);
 	}
 	
 	public void finish() {
 		//delete temp files created
-		File f1 = new File(".temp2.mp3");
-		File f2 = new File(".temp1.mp3");
+		File f1 = new File(".temp1.mp4");
 		f1.delete();
-		f2.delete();
 	}
 	
 	public boolean anyChanges() {
@@ -138,11 +142,8 @@ public class ProjectInfo {
 	}
 	
 	public void render(String outputName) {
-			audioCombine();
+			audioCombine(outputName);
 			//"allow non-standardized experimental things"
-			String command = "avconv -i " + _currentFile.getPath() + " -strict experimental -i  .temp2.mp3" 
-			+ " -strict experimental -map 0:v -map 1:a " + System.getProperty("user.home") + System.getProperty("file.separator") + outputName;
-			_commands.add(command);
 			//avconv -i x.mp4 -strict experimental -i a.mp3 -strict experimental -map 0:v -map 1:a output.mp4
 			commandWorker _audioWorker = new commandWorker();
 			_audioWorker.execute();
@@ -154,16 +155,23 @@ public class ProjectInfo {
 		
 		@Override
 		protected Void doInBackground() throws Exception {
+			int i = 0;
 			for (String s : _commands) {
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", s);
-				
+				System.out.println(s);
 				builder.redirectErrorStream(true);
 				Process process = null;
 				try {
 					process = builder.start();
+					// when it is stripped, needs to create temp video file - first command ie when i = 0
+					// when it is not stripped, first command
+					if ((_isStripped && i == 1) || (!(_isStripped))) {
+						// process stuff here
+					}
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
+				
 				
 				process.waitFor();
 				
