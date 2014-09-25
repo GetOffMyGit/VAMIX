@@ -22,6 +22,8 @@ import javax.swing.JProgressBar;
 import javax.swing.JSlider;
 import javax.swing.Timer;
 import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
@@ -36,19 +38,21 @@ public class MediaPlayer extends JPanel implements ActionListener {
 
 	private EmbeddedMediaPlayerComponent _mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
 	private EmbeddedMediaPlayer _video = _mediaPlayerComponent.getMediaPlayer();
-//	private JPanel _mediaPlayerComponent = new JPanel();
 	private JButton _play = new JButton();
 	private JButton _pause = new JButton();
 	private JButton _stop = new JButton();
 	private JButton _mute = new JButton();
 	private JButton _fastForward = new JButton();
 	private JButton _rewind = new JButton();
-	private JSlider _volumeControl = new JSlider();
+	private JSlider _volumeControl = new JSlider(0, 200);
 	private JPanel _controls = new JPanel();
 	private JProgressBar _progressBar = new JProgressBar();
 	private Timer _clock;
 	private JLabel _durationLabel = new JLabel("\\ 00:00:00");
 	private JLabel _timer = new JLabel("00:00:00");
+	private boolean _isPaused = false;
+	private int _setVolume = 100;
+	private ProjectInfo _projectInfo = ProjectInfo.getInstance();
 
 	private CurrentFile _currentFile = CurrentFile.getInstance();
 
@@ -76,6 +80,18 @@ public class MediaPlayer extends JPanel implements ActionListener {
 		_progressBar.setValue(0);
 		_progressBar.setMinimum(0);
 		_progressBar.setMaximum(_currentFile.getDurationSeconds());
+		
+		//Configure volume slider
+		_volumeControl.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				int volume = _volumeControl.getValue();
+				_video.setVolume(volume);
+				_setVolume = volume;
+				_projectInfo.adjustVolume(_setVolume);
+			}
+		});
 
 		//Set Up buttons with images
 		try {
@@ -147,7 +163,6 @@ public class MediaPlayer extends JPanel implements ActionListener {
 		//Add control components to the control panel
 		_controls.setLayout(new FlowLayout(FlowLayout.LEFT));
 		_controls.add(_rewind);
-	//	_controls.add(_pause);
 		_controls.add(_play);
 		_controls.add(_fastForward);
 		_controls.add(_stop);
@@ -181,12 +196,43 @@ public class MediaPlayer extends JPanel implements ActionListener {
 					JOptionPane.showMessageDialog(null, "Please open an audio or video file before playing");
 					return;
 				} else {
+					Image pauseImage;
+					try {
+						pauseImage = ImageIO.read(new File("res/Pause.png"));
+						pauseImage = pauseImage.getScaledInstance(80, 80, java.awt.Image.SCALE_SMOOTH);
+						_play.setIcon(new ImageIcon(pauseImage));
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					_video.playMedia(_currentFile.getPath());
 				}
 			} else {
-				_video.pause();
+				if(!_isPaused) {
+					try {
+						Image playImage = ImageIO.read(new File("res/Play.png"));
+						playImage = playImage.getScaledInstance(80, 80, java.awt.Image.SCALE_SMOOTH);
+						_play.setIcon(new ImageIcon(playImage));
+						_video.pause();
+						_isPaused = true;
+						JOptionPane.showMessageDialog(null, _projectInfo.getVolume());
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				} else {
+					try {
+						Image pauseImage = ImageIO.read(new File("res/Pause.png"));
+						pauseImage = pauseImage.getScaledInstance(80, 80, java.awt.Image.SCALE_SMOOTH);
+						_play.setIcon(new ImageIcon(pauseImage));
+						_video.pause();
+						_isPaused = false;
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 			}
-			_play.setEnabled(false);
 			_stop.setEnabled(true);
 			_pause.setEnabled(true);
 			_mute.setEnabled(true);

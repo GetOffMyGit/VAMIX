@@ -14,11 +14,14 @@ public class ProjectInfo {
 	// text details start
 	// text details end
 	// overlay file
+	private CurrentFile _currentFile = CurrentFile.getInstance();
+	private String _adjustVolume;
+	
 	private DefaultListModel _overlays;
 	private static ProjectInfo _instance;
 	
 	protected ProjectInfo() {
-		// create
+		// create 
 		_overlays = new DefaultListModel<AudioFile>();
 	}
 	
@@ -37,9 +40,23 @@ public class ProjectInfo {
 		return _overlays;
 	}
 	
+<<<<<<< HEAD
 	public void removeOverlay(int index) {
 		_overlays.remove(index);
 	}
+=======
+	public void adjustVolume(int initialVolume) {
+		int inputVolume =initialVolume / 100;
+		String stringInput = Integer.toString(inputVolume);
+		String command = "avconv -i " + _currentFile.getPath() + "-filter_complex volume=volume=" + stringInput + " output.avi";
+		_adjustVolume = command;
+	}
+	
+	public String getVolume() {
+		return _adjustVolume;
+	}
+	
+>>>>>>> 34911282d97da07a509eeb0c36921a5edb9a11fd
 	// singleton class accessed by evertyhing
 	
 	// methods 
