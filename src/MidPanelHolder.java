@@ -56,6 +56,7 @@ public class MidPanelHolder extends JPanel {
 		
 		_allInfo.remove(_overlay);
 		_overlay = new OverlayPanel(); 
+		_overlay.setPreferredSize(new Dimension(200, 360));
 		_allInfo.add(_overlay, BorderLayout.SOUTH);
 		revalidate();
 		repaint();
