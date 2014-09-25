@@ -49,7 +49,6 @@ public class MenuBar extends JPanel implements ActionListener {
 	
 	
 	private stripAudioWorker _audioWorker;
-	private static ProjectInfo _projectInfo;
 	
 	public MenuBar(MidPanelHolder midPanelHolder) {
 		Color backgroundColor = new Color(42, 46, 53);
@@ -100,9 +99,7 @@ public class MenuBar extends JPanel implements ActionListener {
 		add(_fileTab);
 		add(_editAudioTab);
 		add(_editTextTab);
-		
-		_projectInfo = ProjectInfo.getInstance();
-		
+			
 		
 	}
 
@@ -118,10 +115,10 @@ public class MenuBar extends JPanel implements ActionListener {
 				_currentFile.resetInstance();
 				_currentFile.setInstance(theFile);
 				if(_currentFile.getType() == null) {
-					JOptionPane.showMessageDialog(null, "Please select an audio or video file");
+					JOptionPane.showMessageDialog(this, "Please select an audio or video file");
 					_currentFile = null;
 				} else if ((!(_currentFile.getType().equals("Video")) && (_currentFile.getType().equals("Audio") && (_currentFile.getType().equals("Video with Audio"))))) {
-					JOptionPane.showMessageDialog(null, "Please select an audio or video file");
+					JOptionPane.showMessageDialog(this, "Please select an audio or video file");
 					_currentFile = null;
 				} else {
 					_midPanelHolder.refreshMidPane();
@@ -143,7 +140,10 @@ public class MenuBar extends JPanel implements ActionListener {
 			}	
 		}
 		if (ae.getSource() == _stripAudio) {
-			
+			if ((_currentFile.getType().equals("Video")) || (ProjectInfo.getInstance().isStripped())) { 
+				JOptionPane.showMessageDialog(null, "Video file does not have audio"); 
+				return;
+			}
 			String outputName = (String)JOptionPane.showInputDialog(this,
                     "Please enter a output audio name:",
                     "Strip Raw Audio", JOptionPane.PLAIN_MESSAGE, null, null, "");
@@ -151,14 +151,15 @@ public class MenuBar extends JPanel implements ActionListener {
 			if (outputName != null) {
 				_audioWorker = new stripAudioWorker(outputName);
 				_audioWorker.execute();
+				ProjectInfo.getInstance().Stripped();
 				
 			} // when
 			
 			
 		}
 		if (ae.getSource() == _replaceAudio) {
-			if (_currentFile.getType().equals("Video")) { 
-				JOptionPane.showMessageDialog(null, "Video file does not have audio"); 
+			if ((_currentFile.getType().equals("Video"))  || (ProjectInfo.getInstance().isStripped())) { 
+				JOptionPane.showMessageDialog(this, "Video file does not have audio, please overlay"); 
 				return;
 			}
 			JFileChooser fileChooser = new JFileChooser();
@@ -167,9 +168,9 @@ public class MenuBar extends JPanel implements ActionListener {
 				File theFile = fileChooser.getSelectedFile();
 				AudioFile replaceAudio = new AudioFile(theFile);
 				if(replaceAudio.getType() == null) {
-					JOptionPane.showMessageDialog(null, "Please select an audio file");
+					JOptionPane.showMessageDialog(this, "Please select an audio file");
 				} else if (!(replaceAudio.getType().equals("Audio"))) {
-					JOptionPane.showMessageDialog(null, "Please select an audio file");
+					JOptionPane.showMessageDialog(this, "Please select an audio file");
 					
 				} else {
 					int reply = JOptionPane.showConfirmDialog(this,
@@ -178,8 +179,7 @@ public class MenuBar extends JPanel implements ActionListener {
 					
 					// outputName is null when cancelled or closed
 					if (reply == JOptionPane.OK_OPTION) {
-						// check if empty
-						
+						ProjectInfo.getInstance().Replace(replaceAudio);
 					} // when
 					
 				}
@@ -193,24 +193,23 @@ public class MenuBar extends JPanel implements ActionListener {
 			
 		}
 		if (ae.getSource() == _overlayAudio) {
-			OverlayPanel.OverlayAudio();
-			// mix two audio
-			//avconv -i input1 -i input2 -filter_complex amix=input=3:duration=first:dropout_transition=2 output
-			// need swing worker
-			
-
+			OverlayPanel.OverlayAudio();		
 		}
 		
 		if (ae.getSource() == _render) {
+			if (!(ProjectInfo.getInstance().anyChanges())) {
+				JOptionPane.showMessageDialog(this, "No changes, render failed.");
+				return;
+			}
 			String outputName = (String)JOptionPane.showInputDialog(this,
                     "Please enter a output video name:",
                     "Render", JOptionPane.PLAIN_MESSAGE, null, null, "");
 			// outputName is null when cancelled or closed
 			if (outputName != null) {
 				if (outputName.equals("")) {
-					JOptionPane.showMessageDialog(null, "Please enter a output video name.");
+					JOptionPane.showMessageDialog(this, "Please enter a output video name.");
 				} else {
-					_projectInfo.render(outputName);
+					ProjectInfo.getInstance().render(outputName);
 				}
 			}
 		}
