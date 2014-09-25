@@ -215,7 +215,7 @@ public class MediaPlayer extends JPanel implements ActionListener {
 						_play.setIcon(new ImageIcon(playImage));
 						_video.pause();
 						_isPaused = true;
-						JOptionPane.showMessageDialog(null, _projectInfo.getVolume());
+						
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

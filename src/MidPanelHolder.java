@@ -53,11 +53,10 @@ public class MidPanelHolder extends JPanel {
 		_allInfo.remove(_fileInfo);
 		remove(_mediaPlayerHolder);
 		_fileInfo = new FileInfo();
-<<<<<<< HEAD
-=======
+
 		Color backgroundColor = new Color(70, 73, 74);
 		_fileInfo.setBackground(backgroundColor);
->>>>>>> 34911282d97da07a509eeb0c36921a5edb9a11fd
+
 		_mediaPlayerHolder = new MediaPlayer();
 		_fileInfo.setPreferredSize(new Dimension(200, 200));
 		
