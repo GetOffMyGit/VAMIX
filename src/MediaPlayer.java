@@ -34,16 +34,16 @@ import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 public class MediaPlayer extends JPanel implements ActionListener {
 
-//	private EmbeddedMediaPlayerComponent _mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
-//	private EmbeddedMediaPlayer _video = _mediaPlayerComponent.getMediaPlayer();
-	private JPanel _mediaPlayerComponent = new JPanel();
+	private EmbeddedMediaPlayerComponent _mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
+	private EmbeddedMediaPlayer _video = _mediaPlayerComponent.getMediaPlayer();
+//	private JPanel _mediaPlayerComponent = new JPanel();
 	private JButton _play = new JButton();
 	private JButton _pause = new JButton();
 	private JButton _stop = new JButton();
 	private JButton _mute = new JButton();
 	private JButton _fastForward = new JButton();
 	private JButton _rewind = new JButton();
-	private JSlider _volumeControl;
+	private JSlider _volumeControl = new JSlider();
 	private JPanel _controls = new JPanel();
 	private JProgressBar _progressBar = new JProgressBar();
 	private Timer _clock;
@@ -54,16 +54,14 @@ public class MediaPlayer extends JPanel implements ActionListener {
 
 	public MediaPlayer() {
 		
-	/*	NativeLibrary.addSearchPath(
->>>>>>> 8dd2afbf5f202443fa503d90e9c868926ea7c3e5
+		NativeLibrary.addSearchPath(
 				RuntimeUtil.getLibVlcLibraryName(), "/usr/lib"
 				);
 
-		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class); */
+		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
 
 		setLayout(new BorderLayout());
 		
-		_mediaPlayerComponent.setBackground(Color.black);
 
 		//Media player and control dimensions
 		_mediaPlayerComponent.setPreferredSize(new Dimension(800, 470)); //475
@@ -126,24 +124,6 @@ public class MediaPlayer extends JPanel implements ActionListener {
 		_mute.setEnabled(false);
 		_fastForward.setEnabled(false);
 		_rewind.setEnabled(false);
-
-		//Slider configurations
-		_volumeControl = new JSlider();
-		UIManager.getLookAndFeelDefaults().put("Slider.horizontalThumbIcon", new ImageIcon() {
-			@Override
-			public int getIconHeight() {
-				return 0;
-			}
-			
-			@Override public int getIconWidth() {
-				return 0;
-			}
-			
-		//	@Override
-		//	public void paintIcon(Component c, Graphics g, int x, int y) {
-				
-		//	}
-		}); 
 		
 		//Display video duration on the label
 		if(_currentFile.getDuration() != null) {
@@ -195,7 +175,7 @@ public class MediaPlayer extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent ae) {
 		if(ae.getSource() == _play) {
-		/*	if(!_video.canPause()) {
+			if(!_video.canPause()) {
 				_currentFile = CurrentFile.getInstance();
 				if(_currentFile.getType() == null) {
 					JOptionPane.showMessageDialog(null, "Please open an audio or video file before playing");
@@ -205,7 +185,7 @@ public class MediaPlayer extends JPanel implements ActionListener {
 				}
 			} else {
 				_video.pause();
-			} */
+			}
 			_play.setEnabled(false);
 			_stop.setEnabled(true);
 			_pause.setEnabled(true);
@@ -213,11 +193,11 @@ public class MediaPlayer extends JPanel implements ActionListener {
 			_fastForward.setEnabled(true);
 			_rewind.setEnabled(true);
 		} else if(ae.getSource() == _pause) {
-	//		_video.pause();
+			_video.pause();
 			_play.setEnabled(true);
 			_pause.setEnabled(false);
 		} else if(ae.getSource() == _stop) {
-	//		_video.stop();
+			_video.stop();
 			_stop.setEnabled(false);
 			_play.setEnabled(true);
 			_pause.setEnabled(false);
@@ -227,17 +207,17 @@ public class MediaPlayer extends JPanel implements ActionListener {
 		} else if(ae.getSource() == _fastForward) {
 			_fastForward.setEnabled(false);
 			while(!_fastForward.isEnabled()) {
-	//			_video.skip(1000);
+				_video.skip(1000);
 			}
 		} else if(ae.getSource() == _rewind) {
-	//		_video.skip(-1000);
+			_video.skip(-1000);
 		} else if(ae.getSource() == _mute) {
-	//		_video.mute();
+			_video.mute();
 		} else if(ae.getSource() == _clock) {
-	//		int time = (int) (_video.getTime()/1000.0);
-	//		_progressBar.setValue(time);
-	//		String stringTime = formatTime(time);
-	//		_timer.setText(stringTime);
+			int time = (int) (_video.getTime()/1000.0);
+			_progressBar.setValue(time);
+			String stringTime = formatTime(time);
+			_timer.setText(stringTime);
 		}
 	}
 	

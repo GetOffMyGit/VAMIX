@@ -56,13 +56,13 @@ public class MidPanelHolder extends JPanel {
 	
 	public void refreshMidPane() {
 		
-		_allInfo.remove(_fileInfo);
+	//	_allInfo.remove(_fileInfo);
 		//remove(_mediaPlayerHolder);
 		_fileInfo = new FileInfo();
 		//_mediaPlayerHolder = new MediaPlayer();
 		_fileInfo.setPreferredSize(new Dimension(200, 200));
 		
-		_allInfo.add(_fileInfo, BorderLayout.NORTH);
+		//_allInfo.add(_fileInfo, BorderLayout.NORTH);
 		//add(_mediaPlayerHolder, BorderLayout.CENTER);
 		revalidate();
 		repaint();

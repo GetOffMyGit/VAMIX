@@ -24,7 +24,6 @@ public class FileInfo extends JPanel {
 	private JLabel _type;
 	private JLabel _bitRate;
 	private JLabel _durationSeconds;
-	private JLabel _overlaylabel = new JLabel("Audio overlays:");
 	private CurrentFile _currentFile;
 	private JPanel _overlay;
 	
@@ -76,6 +75,5 @@ public class FileInfo extends JPanel {
 		add(_type);
 		add(_bitRate);
 		add(_durationSeconds);
-		add(_overlaylabel);
 	}
 }
