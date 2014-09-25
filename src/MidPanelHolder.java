@@ -28,14 +28,9 @@ public class MidPanelHolder extends JPanel {
 	private JPanel _fileInfo = new FileInfo();
 	private JPanel _mediaPlayerHolder = new MediaPlayer();
 	private JPanel _controls = new JPanel();
-	//private EmbeddedMediaPlayerComponent _mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
-	//private EmbeddedMediaPlayer _video = _mediaPlayerComponent.getMediaPlayer();
 	private JPanel _allInfo = new JPanel();
 	private JPanel _overlay;
 	private ProjectInfo _projectInfo;
-//	private EmbeddedMediaPlayerComponent _mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
-//	private EmbeddedMediaPlayer _video = _mediaPlayerComponent.getMediaPlayer();
-//	private JPanel _mediaPlayerHolder = new JPanel();
 	
 	
 	public MidPanelHolder() {
@@ -47,7 +42,6 @@ public class MidPanelHolder extends JPanel {
 		_overlay = new OverlayPanel();
 		_allInfo.add(_overlay, BorderLayout.CENTER);
 		add(_allInfo, BorderLayout.WEST);
-		//add(_mediaPlayerHolder, BorderLayout.CENTER);
 		Color backgroundColor = new Color(70, 73, 74);
 		_fileInfo.setBackground(backgroundColor);
 		
@@ -56,14 +50,16 @@ public class MidPanelHolder extends JPanel {
 	
 	public void refreshMidPane() {
 		
-	//	_allInfo.remove(_fileInfo);
-		//remove(_mediaPlayerHolder);
+		_allInfo.remove(_fileInfo);
+		remove(_mediaPlayerHolder);
 		_fileInfo = new FileInfo();
-		//_mediaPlayerHolder = new MediaPlayer();
+		Color backgroundColor = new Color(70, 73, 74);
+		_fileInfo.setBackground(backgroundColor);
+		_mediaPlayerHolder = new MediaPlayer();
 		_fileInfo.setPreferredSize(new Dimension(200, 200));
 		
-		//_allInfo.add(_fileInfo, BorderLayout.NORTH);
-		//add(_mediaPlayerHolder, BorderLayout.CENTER);
+		_allInfo.add(_fileInfo, BorderLayout.NORTH);
+		add(_mediaPlayerHolder, BorderLayout.CENTER);
 		revalidate();
 		repaint();
 		

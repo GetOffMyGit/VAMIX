@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
@@ -23,6 +24,16 @@ public class OverlayPanel  extends JPanel  {
 		super(new BorderLayout());
 		_projectInfo = ProjectInfo.getInstance();
 		_overlaylist = new JList(_projectInfo.getOverlays());
+		
+		Color backgroundColor = new Color(70, 73, 74);
+		_buttons.setBackground(backgroundColor);
+		
+		Color buttonColor = new Color(220, 222, 224);
+		_add.setBackground(buttonColor);
+		_add.setBorderPainted(false);
+		
+		_delete.setBackground(buttonColor);
+		_delete.setBorderPainted(false);
 		
 		// only one selection
 		_overlaylist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
