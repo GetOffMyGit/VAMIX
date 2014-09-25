@@ -252,6 +252,8 @@ public class EditTextFrame extends JFrame implements ActionListener {
 		//Add action listeners
 		_confirm.addActionListener(this);
 		_cancel.addActionListener(this);
+		_introPreview.addActionListener(this);
+		_outroPreview.addActionListener(this);
 		
 
 		//Panel for entering text
@@ -281,7 +283,7 @@ public class EditTextFrame extends JFrame implements ActionListener {
 			System.out.print("heello");
 			_previewWorker.destroyProcess();
 		} 
-		if (e.getSource() == _preview){
+		if (e.getSource() == _introPreview){
 			String color = (String)_introColor.getSelectedItem();
 			String size =  (String)_introSize.getSelectedItem();
 			String text = (String)_introText.getText();
