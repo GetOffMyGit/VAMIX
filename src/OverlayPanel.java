@@ -21,7 +21,7 @@ public class OverlayPanel  extends JPanel  implements ActionListener  {
 	
 	private static ProjectInfo _projectInfo;
 	private JLabel _label = new JLabel("Audio overlays");
-	private static JButton _delete = new JButton("Delete");
+	private static JButton _delete;
 	private JButton _add = new JButton("Add");
 	private JPanel _buttons = new JPanel(new FlowLayout());
 
@@ -30,15 +30,12 @@ public class OverlayPanel  extends JPanel  implements ActionListener  {
 		
 		_projectInfo = ProjectInfo.getInstance();
 		_overlaylist = new JList(ProjectInfo.getInstance().getOverlays());
-		
+		_delete = new JButton("Delete");
 
 		int size = _projectInfo.getOverlays().getSize();
 		if (size == 0) {
 	    	_delete.setEnabled(false);
-
 	    }
-
-		
 
 		Color backgroundColor = new Color(70, 73, 74);
 		_buttons.setBackground(backgroundColor);
@@ -63,6 +60,11 @@ public class OverlayPanel  extends JPanel  implements ActionListener  {
 		add(_buttons, BorderLayout.SOUTH);
 		_delete.addActionListener(this);
 		_add.addActionListener(this);
+		_add.setEnabled(true);
+	}
+	
+	public void initialSetUp() {
+		_add.setEnabled(false);
 	}
 
 	@Override
@@ -70,7 +72,7 @@ public class OverlayPanel  extends JPanel  implements ActionListener  {
 		if (e.getSource() == _delete) {
 			int index = _overlaylist.getSelectedIndex();
 			if (index == -1) {
-				JOptionPane.showMessageDialog(this,
+				JOptionPane.showMessageDialog(null,
 						"ERROR: no audio file selected");
 				return;
 			}
@@ -86,7 +88,6 @@ public class OverlayPanel  extends JPanel  implements ActionListener  {
 		            //removed item in last position
 		            index--;
 		        }
-
 		        _overlaylist.setSelectedIndex(index);
 		        _overlaylist.ensureIndexIsVisible(index);
 		    }

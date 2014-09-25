@@ -12,7 +12,7 @@ public class MidPanelHolder extends JPanel {
 	private JPanel _fileInfo = new FileInfo();
 	private JPanel _mediaPlayerHolder = new MediaPlayer();
 	private JPanel _allInfo = new JPanel();
-	private JPanel _overlay = new OverlayPanel();
+	private OverlayPanel _overlay = new OverlayPanel();
 	private JPanel _audioPlayerHolder = new JPanel();
 	private JPanel _audioPlayer = new AudioPlayer();
 	
@@ -35,6 +35,7 @@ public class MidPanelHolder extends JPanel {
 		_audioPlayerHolder.add(_audioPlayer, BorderLayout.CENTER);
 		
 		_allInfo.add(_audioPlayerHolder, BorderLayout.CENTER);
+		_overlay.initialSetUp();
 		
 		
 	}
@@ -52,6 +53,7 @@ public class MidPanelHolder extends JPanel {
 		_allInfo.add(_fileInfo, BorderLayout.NORTH);
 		add(_mediaPlayerHolder, BorderLayout.CENTER);
 		ProjectInfo.reset();
+		
 		_allInfo.remove(_overlay);
 		_overlay = new OverlayPanel(); 
 		_allInfo.add(_overlay, BorderLayout.SOUTH);

@@ -43,6 +43,7 @@ public class MenuBar extends JPanel implements ActionListener {
 	private JMenuItem _replaceAudio = new JMenuItem("Replace Audio");
 	private JMenuItem _overlayAudio = new JMenuItem("Overlay Audio");
 	private JMenuItem _editText = new JMenuItem("Edit Text");
+	private JMenuItem _preview = new JMenuItem("Preview");
 	private DownloadFrame dl = null;
 	private CurrentFile _currentFile;
 	private MidPanelHolder _midPanelHolder;
@@ -80,6 +81,9 @@ public class MenuBar extends JPanel implements ActionListener {
 		_download.addActionListener(this);
 		_fileMenu.add(_download);
 
+		_preview.addActionListener(this);
+		_fileMenu.add(_preview);
+		
 		
 		_editAudioMenu.add(_stripAudio);
 		_editAudioMenu.add(_replaceAudio);
@@ -91,6 +95,12 @@ public class MenuBar extends JPanel implements ActionListener {
 		_overlayAudio.addActionListener(this);
 		_render.addActionListener(this);
 		_editText.addActionListener(this);
+		
+		_stripAudio.setEnabled(false);
+		_replaceAudio.setEnabled(false);
+		_overlayAudio.setEnabled(false);
+		_render.setEnabled(false);
+		_editText.setEnabled(false);
 		
 		_fileTab.add(_fileMenu);
 		_editAudioTab.add(_editAudioMenu);
@@ -124,6 +134,11 @@ public class MenuBar extends JPanel implements ActionListener {
 					_currentFile = null;
 				} else {
 					_midPanelHolder.refreshMidPane();
+					_stripAudio.setEnabled(true);
+					_replaceAudio.setEnabled(true);
+					_overlayAudio.setEnabled(true);
+					_render.setEnabled(true);
+					_editText.setEnabled(true);
 				}
 			}
 		}
@@ -200,7 +215,7 @@ public class MenuBar extends JPanel implements ActionListener {
 		
 		if (ae.getSource() == _render) {
 			if (!(ProjectInfo.getInstance().anyChanges())) {
-				JOptionPane.showMessageDialog(this, "No changes, render failed.");
+				JOptionPane.showMessageDialog(this, "No changes made, render failed.");
 				return;
 			}
 			String outputName = (String)JOptionPane.showInputDialog(this,
@@ -227,12 +242,20 @@ public class MenuBar extends JPanel implements ActionListener {
 				}
 			}
 		}
+		
+		if (ae.getSource() == _preview) {
+			if (!(ProjectInfo.getInstance().anyChanges())) {
+				JOptionPane.showMessageDialog(this, "No changes made, preview failed.");
+				return;
+			}
+		}
 	}
 	
 	
 	public void finish() {
 		JOptionPane.showMessageDialog(this, "Successful download of !");
 	}
+	
 	
 	class stripAudioWorker extends SwingWorker<Void, Integer> {
 		private int _exitStatus;

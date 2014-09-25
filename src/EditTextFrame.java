@@ -2,6 +2,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.io.IOException;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -10,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingWorker;
 
 
 public class EditTextFrame extends JFrame {
@@ -109,5 +112,40 @@ public class EditTextFrame extends JFrame {
 
 		add(_introPanel, BorderLayout.NORTH);
 		add(_outroPanel, BorderLayout.CENTER);
+	}
+	
+	class previewWorker extends SwingWorker<Void, Integer> {
+		private int _exitStatus;
+		private String _outputName;
+		public previewWorker() {
+		}
+		
+		@Override
+		protected Void doInBackground() throws Exception {		
+			// progress line bars are seen as dots
+			// Suppress quotation marks
+			String cmd = "avplay -i " + CurrentFile.getInstance().getPath();
+					//" -t 0:00:10  -vf drawtext=""fontfile=/usr/share/fonts/truetype/freefont/FreeSerif.ttf: text='xxx': fontsize=24: fontcolor=yellow""";
+			ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+			
+			builder.redirectErrorStream(true);
+			Process process = null;
+			try {
+				process = builder.start();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			
+			_exitStatus = process.waitFor();
+			
+            process.destroy();
+			return null;
+		}
+		
+		 @Override
+	     protected void process(List<Integer> chunks) {
+
+	     }
+		 
 	}
 }

@@ -136,6 +136,7 @@ public class ProjectInfo {
 	
 	public void render(String outputName) {
 			audioCombine();
+			//"allow non-standardized experimental things"
 			String command = "avconv -i " + _currentFile.getPath() + " -strict experimental -i  .temp2.mp3" 
 			+ " -strict experimental -map 0:v -map 1:a " + System.getProperty("user.home") + System.getProperty("file.separator") + outputName;
 			_commands.add(command);
@@ -145,10 +146,7 @@ public class ProjectInfo {
 	}
 	
 	class commandWorker extends SwingWorker<Void, Integer> {
-		private int _exitStatus;
-		private String _outputName;
 		public commandWorker() {
-			
 		}
 		
 		@Override
@@ -164,7 +162,7 @@ public class ProjectInfo {
 					e1.printStackTrace();
 				}
 				
-				_exitStatus = process.waitFor();
+				process.waitFor();
 				System.out.println("jhl");
 				
 	            process.destroy();
