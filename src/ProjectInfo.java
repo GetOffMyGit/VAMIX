@@ -1,3 +1,6 @@
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -5,9 +8,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.ListModel;
 import javax.swing.SwingWorker;
 
@@ -33,6 +42,11 @@ public class ProjectInfo {
 	private AudioFile _newAudio;
 	private File _noAudio;
 	private final String _tempFileName = ".temp1.mp4";
+	private ProgressFrame _progressFrame;
+	private JProgressBar _progressBar = new JProgressBar();
+	private JLabel _durationLabel = new JLabel();
+	private JLabel _timerLabel = new JLabel();
+	private Process _process;
 	
 	protected ProjectInfo() {
 		// create 
@@ -123,11 +137,10 @@ public class ProjectInfo {
 				command += "-i " + f.getPath() + " -strict experimental ";
 				inputs++;
 			}
-
-			command += "-filter_complex amix=inputs=" + inputs + ":duration=longest " + System.getProperty("user.home") 
-					+ System.getProperty("file.separator") + outputName;
-			_commands.add(command);
 		} 
+		command += "-filter_complex amix=inputs=" + inputs + ":duration=longest " + System.getProperty("user.home") 
+				+ System.getProperty("file.separator") + outputName;
+		_commands.add(command);
 	}
 
 
@@ -171,20 +184,39 @@ public class ProjectInfo {
 			for (String s : _commands) {
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", s);
 				builder.redirectErrorStream(true);
-				Process process = null;
 				try {
-					process = builder.start();
+					_process = builder.start();
 					// when it is stripped, needs to create temp video file - first command ie when i = 0
 					// when it is not stripped, first command
 					if ((_isStripped && i == 1) || (!(_isStripped))) {
 						// process stuff here
-						InputStream stdout = process.getInputStream();
-						InputStream stderr = process.getErrorStream();
+						System.out.println(s);
+						InputStream stdout = _process.getInputStream();
+						InputStream stderr = _process.getErrorStream();
 						BufferedReader stdoutBuffered =	new BufferedReader(new InputStreamReader(stdout));
 						String line = null;
+					
+						if(_progressFrame == null) {
+							_progressFrame = new ProgressFrame();
+						} else {
+							if(_progressFrame.isActive()) {
+								_progressFrame.toFront();
+							} else {
+								_progressFrame = new ProgressFrame();
+							}
+						}
 
+						
+						Pattern timePattern = Pattern.compile("time=\\d\\d\\.\\d\\d|\\d\\d\\d\\.\\d\\d|\\d\\d\\d\\d\\.\\d\\d");
+						Matcher timeMatcher;
 						while((line = stdoutBuffered.readLine()) != null) {
-							System.out.println(line);
+							timeMatcher = timePattern.matcher(line);
+							if(timeMatcher.find()) {
+								String time = timeMatcher.group(0).replaceAll("time=", "");
+								String[] timeParts = time.split("\\.");
+								Integer intTime = Integer.parseInt(timeParts[0]);
+								publish(intTime);
+							}
 						}
 					}
 				} catch (IOException e1) {
@@ -192,9 +224,9 @@ public class ProjectInfo {
 				}
 
 
-				process.waitFor();
+	//			_process.waitFor();
 
-				process.destroy();
+//				_process.destroy();
 				i++;
 			}
 
@@ -203,12 +235,58 @@ public class ProjectInfo {
 
 		@Override
 		protected void process(List<Integer> chunks) {
-
+			for(int i : chunks) {
+				_progressBar.setValue(i);
+				String stringI = Integer.toString(i);
+				_timerLabel.setText(stringI);
+			}
 		}
 
 		@Override
 		protected void done() {
 			finish();
+			try {
+				if(_process.waitFor() != 0) {
+					JOptionPane.showMessageDialog(null, "An error occured while rendering");
+				} else {
+					JOptionPane.showMessageDialog(null, "Render successful");
+				}
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public class ProgressFrame extends JFrame {
+		private JPanel _progressPanel = new JPanel();
+		private JPanel _labelsPanel = new JPanel();
+		private JLabel _renderingLabel = new JLabel();
+		
+		public ProgressFrame() {
+			setTitle("Progress");
+			setLayout(new BorderLayout());
+			setVisible(true);
+			setPreferredSize(new Dimension(600, 100));
+			
+			_progressPanel.setLayout(new BorderLayout());
+			_labelsPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+			
+			_progressBar.setMaximum(_currentFile.getDurationSeconds());
+			
+			_timerLabel.setText("0");
+			_durationLabel.setText("/ " + _currentFile.getDurationSeconds());
+			_renderingLabel.setText("Rendering: " + _currentFile.getName());
+			
+			_labelsPanel.add(_timerLabel);
+			_labelsPanel.add(_durationLabel);
+			
+			_progressPanel.add(_progressBar, BorderLayout.CENTER);
+			_progressPanel.add(_renderingLabel, BorderLayout.NORTH);
+			_progressPanel.add(_labelsPanel, BorderLayout.SOUTH);
+			
+			add(_progressPanel, BorderLayout.CENTER);
+			pack();
 		}
 	}
 
