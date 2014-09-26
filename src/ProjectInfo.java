@@ -202,7 +202,6 @@ public class ProjectInfo {
 					// when it is not stripped, first command
 					if ((_isStripped && i == 1) || (!(_isStripped))) {
 						// process stuff here
-						System.out.println(s);
 						InputStream stdout = _process.getInputStream();
 						InputStream stderr = _process.getErrorStream();
 						BufferedReader stdoutBuffered =	new BufferedReader(new InputStreamReader(stdout));
