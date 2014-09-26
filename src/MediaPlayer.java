@@ -281,10 +281,18 @@ public class MediaPlayer extends JPanel implements ActionListener {
 			_fastForward.setEnabled(false);
 			_navigateClock.start();
 			_isFastForward = true;
+			if(_isRewind) {
+				_isRewind = false;
+				_rewind.setEnabled(true);
+			}
 		} else if(ae.getSource() == _rewind) {
 			_rewind.setEnabled(false);
 			_navigateClock.start();
 			_isRewind = true;
+			if(_isFastForward) {
+				_isFastForward = false;
+				_fastForward.setEnabled(true);
+			}
 		} else if(ae.getSource() == _mute) {
 			if(_video.isMute()) {
 				try {
@@ -322,7 +330,7 @@ public class MediaPlayer extends JPanel implements ActionListener {
 	}
 
 
-	private String formatTime(int time) {
+	public String formatTime(int time) {
 		int hours = time / 3600;
 		int remainder = time - (hours * 3600);
 		int minutes = remainder / 60;
