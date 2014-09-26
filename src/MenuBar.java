@@ -244,10 +244,7 @@ public class MenuBar extends JPanel implements ActionListener {
 		}
 		
 		if (ae.getSource() == _preview) {
-			if (!(ProjectInfo.getInstance().anyChanges())) {
-				JOptionPane.showMessageDialog(this, "No changes made, preview failed.");
-				return;
-			}
+			ProjectInfo.getInstance().addText();
 		}
 	}
 	

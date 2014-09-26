@@ -32,6 +32,8 @@ public class ProjectInfo {
 	private List<String> _commands;
 	private AudioFile _newAudio;
 	private File _noAudio;
+	public TextInfo _intro;
+	public TextInfo _outro;
 	private final String _tempFileName = ".temp1.mp4";
 	
 	protected ProjectInfo() {
@@ -43,6 +45,8 @@ public class ProjectInfo {
 
 		_newAudio = null;
 		_isReplaced = false;
+		_intro = new TextInfo();
+		_outro = new TextInfo();
 	}
 
 	public static ProjectInfo getInstance() {
@@ -92,6 +96,14 @@ public class ProjectInfo {
 		_isReplaced = true;
 		_newAudio = replaceAudio;
 
+	}
+	
+	public void addText() {
+		String command = "avconv -i " +  _currentFile.getPath() + " -strict experimental -vf drawtext=\"fontfile=/usr/share/fonts/truetype/freefont/FreeSerif.ttf:text='hello there':draw='lt(t,10)'\" p.mp4";
+		_commands.add(command);
+		commandWorker _audioWorker = new commandWorker();
+		_audioWorker.execute();
+		
 	}
 
 
