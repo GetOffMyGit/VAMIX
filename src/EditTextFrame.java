@@ -63,9 +63,10 @@ public class EditTextFrame extends JFrame implements ActionListener {
 	private CurrentFile _currentFile;
 	private MediaPlayer _mediaPlayer = new MediaPlayer();
 	
-	private JButton _preview = new JButton("Preview");
 	private Timer _clock = new Timer(11000, this);
 	private previewWorker _previewWorker;
+	
+	//avconv -i a.mp4 -strict experimental -vf drawtext="fontfile=/usr/share/fonts/truetype/freefont/FreeSerif.ttf:text='hello there':draw='lt(t,10)'" p.mp4
 
 	public EditTextFrame() {
 		setTitle("Edit Text");
@@ -270,6 +271,7 @@ public class EditTextFrame extends JFrame implements ActionListener {
 
 		add(_introPanel, BorderLayout.NORTH);
 		add(_outroPanel, BorderLayout.CENTER);
+
 		add(_buttons, BorderLayout.SOUTH);
 	}
 	
@@ -280,7 +282,6 @@ public class EditTextFrame extends JFrame implements ActionListener {
 		// when clock ticks
 		if (e.getSource() == _clock) {
 			_clock.stop();
-			System.out.print("heello");
 			_previewWorker.destroyProcess();
 		} 
 		if (e.getSource() == _introPreview){
@@ -291,6 +292,17 @@ public class EditTextFrame extends JFrame implements ActionListener {
 			String duration = _mediaPlayer.formatTime(integerDuration);
 			String cmd = "avplay -i " + CurrentFile.getInstance().getPath() +
 					" -t " + duration + " -vf drawtext=\"fontfile=/usr/share/fonts/truetype/freefont/FreeSerif.ttf: text='" + text + "':" + ""
+							+ "fontsize=" + size +": fontcolor=" + color + "\"";
+			_clock.start();
+			_previewWorker = new previewWorker(cmd);
+			_previewWorker.execute();
+		}
+		if (e.getSource() == _outroPreview){
+			String color = (String)_outroColor.getSelectedItem();
+			String size =  (String)_outroSize.getSelectedItem();
+			String text = (String)_outroText.getText();
+			String cmd = "avplay -ss 0:05:00 -i " + CurrentFile.getInstance().getPath() +
+					" -t 0:00:10 -vf drawtext=\"fontfile=/usr/share/fonts/truetype/freefont/FreeSerif.ttf: text='" + text + "':" + ""
 							+ "fontsize=" + size +": fontcolor=" + color + "\"";
 			_clock.start();
 			_previewWorker = new previewWorker(cmd);
