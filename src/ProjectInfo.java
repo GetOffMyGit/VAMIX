@@ -247,7 +247,7 @@ public class ProjectInfo {
 			finish();
 			try {
 				if(_process.waitFor() != 0) {
-					JOptionPane.showMessageDialog(null, "An error occured while rendering");
+					JOptionPane.showMessageDialog(null, "An error occured while rendering"); 
 				} else {
 					JOptionPane.showMessageDialog(null, "Render successful");
 				}
