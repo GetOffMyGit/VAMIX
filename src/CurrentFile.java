@@ -15,6 +15,8 @@ public class CurrentFile {
 	private String _type;
 	private String _bitRate;
 	private int _durationSeconds;
+	private int _width;
+	private int _height;
 
 	private CurrentFile() {
 
@@ -53,6 +55,22 @@ public class CurrentFile {
 								} else {
 									_type = "Video with Audio";
 								}
+							}
+							
+							if (line.contains("x")) {
+								int location = 0;
+								for(int j = 0; j < streamSplit.length; j++) {
+									if(streamSplit[j].contains("x")) {
+										location = j;
+										break;
+									}
+								}
+								String dimensionString = streamSplit[location].replaceAll(",", "");
+								String[] dimensionParts = dimensionString.split("x");
+								int width = Integer.parseInt(dimensionParts[0]);
+								int height = Integer.parseInt(dimensionParts[1]);
+								_width = width;
+								_height = height;
 							}
 						} else if(streamSplit[i].equals("Audio:")) {
 							if(_type == null) {
@@ -123,6 +141,14 @@ public class CurrentFile {
 	
 	public int getDurationSeconds() {
 		return _durationSeconds;
+	}
+	
+	public int getWidth() {
+		return _width;
+	}
+	
+	public int getHeight() {
+		return _height;
 	}
 	
 	public String getPath() {

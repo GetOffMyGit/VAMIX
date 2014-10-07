@@ -39,11 +39,11 @@ public class MenuBar extends JPanel implements ActionListener {
 	private JMenuItem _openFile = new JMenuItem("Open File");
 	private JMenuItem _render = new JMenuItem("Render");
 	private JMenuItem _download = new JMenuItem("Download");
+	private JMenuItem _save = new JMenuItem("Save");
 	private JMenuItem _stripAudio = new JMenuItem("Strip Audio");
 	private JMenuItem _replaceAudio = new JMenuItem("Replace Audio");
 	private JMenuItem _overlayAudio = new JMenuItem("Overlay Audio");
 	private JMenuItem _editText = new JMenuItem("Edit Text");
-	private JMenuItem _preview = new JMenuItem("Preview");
 	private DownloadFrame dl = null;
 	private CurrentFile _currentFile;
 	private MidPanelHolder _midPanelHolder;
@@ -80,10 +80,9 @@ public class MenuBar extends JPanel implements ActionListener {
 		
 		_download.addActionListener(this);
 		_fileMenu.add(_download);
-
-		_preview.addActionListener(this);
-		_fileMenu.add(_preview);
 		
+		_save.addActionListener(this);
+		_fileMenu.add(_save);
 		
 		_editAudioMenu.add(_stripAudio);
 		_editAudioMenu.add(_replaceAudio);
@@ -197,16 +196,10 @@ public class MenuBar extends JPanel implements ActionListener {
 					// outputName is null when cancelled or closed
 					if (reply == JOptionPane.OK_OPTION) {
 						ProjectInfo.getInstance().Replace(replaceAudio);
-					} // when
+					} 
 					
 				}
 			}
-			//main audio replaced
-			//avconv -i input1 -i input2 -map 0:v -map 1:a output
-			//avconv -i x.mp4 -strict experimental -i a.mp3 -strict experimental -map 0:v -map 1:a output.mp4
-			//only video and audio of input1
-			//"allow non-standardized experimental things"
-			//"‘-strict[:stream_specifier] integer (input/output,audio,video)’ how strictly to follow the standards"
 			
 		}
 		if (ae.getSource() == _overlayAudio) {
@@ -214,10 +207,6 @@ public class MenuBar extends JPanel implements ActionListener {
 		}
 		
 		if (ae.getSource() == _render) {
-			if (!(ProjectInfo.getInstance().anyChanges())) {
-				JOptionPane.showMessageDialog(this, "No changes made, render failed.");
-				return;
-			}
 			String outputName = (String)JOptionPane.showInputDialog(this,
                     "Please enter a output video name:",
                     "Render", JOptionPane.PLAIN_MESSAGE, null, null, "");
@@ -240,13 +229,6 @@ public class MenuBar extends JPanel implements ActionListener {
 				} else {
 					_editTextFrame = new EditTextFrame();
 				}
-			}
-		}
-		
-		if (ae.getSource() == _preview) {
-			if (!(ProjectInfo.getInstance().anyChanges())) {
-				JOptionPane.showMessageDialog(this, "No changes made, preview failed.");
-				return;
 			}
 		}
 	}
