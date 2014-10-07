@@ -231,6 +231,7 @@ public class MenuBar extends JPanel implements ActionListener {
 				}
 			}
 		}
+
 	}
 	
 	

@@ -11,7 +11,15 @@ public class TextInfo {
 	private String _colort;
 	private String _sizet;
 	private String _fontt;
-	
+
+	public TextInfo(int color, int size, int font, String text, Integer duration) {
+		this._color = color;
+		this._font = font;
+		this._size = size;
+		this._text = text;
+		this._integerDuration = duration;
+	}
+
 	public TextInfo() {
 		_font = 0;
 		_color = 0;

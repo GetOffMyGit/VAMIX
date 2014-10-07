@@ -114,6 +114,7 @@ public class EditTextFrame extends JFrame implements ActionListener {
 		String[] colors = { "Red", "Orange", "Yellow", "Green" };
 		String[] size = { "14", "16", "18", "20", "22", "24", "26", "28", "30", "32"};
 
+
 		_introFont1 = new JComboBox(fonts);
 		_introColor = new JComboBox(colors);
 		_introSize = new JComboBox(size);
@@ -310,6 +311,49 @@ public class EditTextFrame extends JFrame implements ActionListener {
 			_clock.start();
 			_previewWorker = new previewWorker(cmd);
 			_previewWorker.execute();
+		}
+		if (e.getSource() == _outroPreview){
+			String color = (String)_outroColor.getSelectedItem();
+			String size =  (String)_outroSize.getSelectedItem();
+			String text = (String)_outroText.getText();
+			String font = (String)_outroFont.getSelectedItem();
+			Integer integerDuration = (Integer) _outroDuration.getValue();
+			Integer totalSeconds = CurrentFile.getInstance().getDurationSeconds();
+			String duration = _mediaPlayer.formatTime(integerDuration);
+			String startTime = _mediaPlayer.formatTime(totalSeconds- integerDuration);
+			String cmd = "avplay -ss " + startTime + " -i " + CurrentFile.getInstance().getPath() +
+					" -t " + duration + " -vf drawtext=\"fontfile=/usr/share/fonts/truetype/freefont/" + font + ".ttf: text='" + text + "':" + ""
+							+ "fontsize=" + size +": fontcolor=" + color + "\"";
+			// sets preview for as long as the duration
+			_clock = new Timer(integerDuration*1000 + 100, this);
+			_clock.start();
+			// disable so only allows one preview worker
+			_introPreview.setEnabled(false);
+			_outroPreview.setEnabled(false);
+			_previewWorker = new previewWorker(cmd);
+			_previewWorker.execute();
+		} 
+		if (e.getSource() == _confirm) {
+			int color = _introColor.getSelectedIndex();
+			int size =  _introSize.getSelectedIndex();
+			int font = _introFont1.getSelectedIndex();
+			String text = (String)_introText.getText();
+			Integer integerDuration = (Integer) _introDuration.getValue();
+			String duration = _mediaPlayer.formatTime(integerDuration);
+			ProjectInfo.getInstance()._intro = new TextInfo(color, size, font, text, integerDuration);
+			
+			
+			color = _outroColor.getSelectedIndex();
+			size =  _outroSize.getSelectedIndex();
+			font = _outroFont.getSelectedIndex();
+			text = (String)_outroText.getText();
+			integerDuration = (Integer) _outroDuration.getValue();
+			duration = _mediaPlayer.formatTime(integerDuration);
+			ProjectInfo.getInstance()._outro = new TextInfo(color, size, font, text, integerDuration);
+			dispose();
+		}
+		if (e.getSource() == _cancel) {
+			dispose();
 		}
 		if (e.getSource() == _outroPreview){
 			String color = (String)_outroColor.getSelectedItem();

@@ -1,0 +1,21 @@
+The Lavitasy Prototype
+
+TABLE OF CONTENTS
+	1)INTRODUCTION
+	1)DOWNNLOAD OPEN-SOURCE MEDIA 
+
+
+
+1)INTRODUCTION
+The Lavitasy prototype is a trailer editer, capable of audio and video manipulation and the download of open source media files.
+
+2)DOWNLOAD OPEN-SOURCE MEDIA
+To download open-sourced media on the Lavitasy prototype simply click on the "File" tab on the top-left corner of the Lavitasy prototype. Then, from the drop down
+menu select the "Download" option.
+Enter the URL of the media you wish download in the text area next to the "URL:" e.g. "example.com/example.mp4".
+Next to the text area where the URL is entered there is a check-box called "Open-Source?". This is to confirm that the media file is open-source and available to download.
+If the check-box is not checked, the download will not proceed.
+When both the URL is entered and check-box checked, press the "Download" button directly below to commence the download.
+The progress of the download will be displayed on the progress bar directly below the "Download" button.
+If the user uses to cancel the download while it is incomplete; press the "Cancel" button on the bottom-right, directly below the progress bar.
+If the "Download Button" is pressed when the URL is not entered or the open-source check-box not checked, an error message will be displayed. 
