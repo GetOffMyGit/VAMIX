@@ -3,10 +3,16 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -24,7 +30,7 @@ import javax.swing.SwingWorker;
 
 
 
-public class ProjectInfo {
+public class ProjectInfo implements java.io.Serializable {
 	private CurrentFile _currentFile = CurrentFile.getInstance();
 	private String _adjustVolume;
 
@@ -34,7 +40,6 @@ public class ProjectInfo {
 	private boolean _isReplaced = false;
 	private List<String> _commands;
 	private AudioFile _newAudio;
-	private File _noAudio;
 	public TextInfo _intro;
 	public TextInfo _outro;
 	private final String _tempFileName = ".temp1.mp4";
@@ -43,9 +48,9 @@ public class ProjectInfo {
 	private JLabel _durationLabel = new JLabel();
 	private JLabel _timerLabel = new JLabel();
 	private Process _process;
-	final private String _projectloc = System.getProperty("user.home")
-			+ System.getProperty("file.separator") + ".projects"
-			+ System.getProperty("file.separator") + "project001";
+	final private static String _projectloc = System.getProperty("user.home")
+			//+ System.getProperty("file.separator") + "projects"
+			+ System.getProperty("file.separator") + "project001.txt";
 	
 	protected ProjectInfo() {
 		// create 
@@ -58,6 +63,13 @@ public class ProjectInfo {
 		_isReplaced = false;
 		_intro = new TextInfo();
 		_outro = new TextInfo();
+	}
+	
+	public static ProjectInfo getInstance() {
+		if (_instance == null) {
+			_instance = new ProjectInfo();
+		} 
+		return _instance;
 	}
 	
 	public void saveProject() {
@@ -76,34 +88,99 @@ public class ProjectInfo {
 		// append to file with corresponding operation
 		try {
 			// no appending, overwrites file
+			// writes every new detail on the file
+			String ls = System.getProperty("line.separator");
 			FileWriter fw = new FileWriter(_projectloc, false);
-			fw.write(_currentFile.getPath());
+			fw.write(_currentFile.getPath() + ls);
 			// true = 1, false = 0
-			fw.write(_isStripped? 1 : 0);
-			fw.write(_isReplaced? 1 : 0);
+			fw.write((enable_Strip()? "1" : "0") + ls);
+			fw.write((_isReplaced? "1" : "0") + ls);
 			if (_newAudio == null) {
-				fw.write("");
+				fw.write("" + ls);
 			} else {
-				fw.write(_newAudio.getPath());
+				fw.write(_newAudio.getPath() + ls);
 			}
-			fw.write(_overlays.getSize());
+			fw.write(_overlays.getSize() + ls);
 			for (int i = 0; i < _overlays.size(); i ++) {
 				AudioFile a = (AudioFile)_overlays.getElementAt(i);
-				fw.write(a.getPath());
+				fw.write(a.getPath() + ls);
 			}
-			
+			fw.write(_intro.forFile() + ls);
+			fw.write(_outro.forFile() + ls);
 			// text stuff
 			fw.close();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
 	}
+	
+	public void load() {
+		File f = new File(_projectloc);
+		if (f.exists() && !f.isDirectory()) {
 
-	public static ProjectInfo getInstance() {
-		if (_instance == null) {
-			_instance = new ProjectInfo();
-		} 
-		return _instance;
+			try {
+				InputStream input = new FileInputStream(_projectloc);
+				BufferedReader br = new BufferedReader(new InputStreamReader(input));
+				// set up current file
+				File currentFile = new File(br.readLine());
+				CurrentFile.getInstance().resetInstance();
+				CurrentFile.getInstance().setInstance(currentFile);
+				reset();
+				if (br.readLine().equals("0")) {
+					_isStripped = false;
+				} else {
+					_isStripped = true;
+				}
+				
+				if (br.readLine().equals("0")) {
+					_isReplaced = false;
+				} else {
+					_isReplaced = true;
+				}
+				String newAudioPath = br.readLine();
+				if (!newAudioPath.equals("")) {
+					File newAudioFile = new File(newAudioPath);
+					_newAudio = new AudioFile(newAudioFile);	
+				}
+				
+				int numOverlays = Integer.parseInt(br.readLine());
+				for (int i = 0; i < numOverlays; i ++) {
+					String overlayPath = br.readLine();
+					File overlay = new File(overlayPath);
+					addOverlay(new AudioFile(overlay));
+				}
+				
+				String introText = br.readLine();
+				String[] details = introText.split("#");
+
+				//int color, int size, int font, String text, Integer integerDuration, String colort, String sizet, String fontt)
+				_intro = new TextInfo(Integer.parseInt(details[0]),
+						Integer.parseInt(details[1]),
+						Integer.parseInt(details[2]),
+						details[3], Integer.parseInt(details[4]), details[5], details[6], details[7]);
+				String outroText = br.readLine();
+				details = outroText.split("#");
+				_outro = new TextInfo(Integer.parseInt(details[0]), Integer.parseInt(details[1]), Integer.parseInt(details[2]),
+						details[3], Integer.parseInt(details[4]), details[5], details[6], details[7]);
+				br.close();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			// Done with the file
+		} else {
+			// make any necessary parent directories
+			f.getParentFile().mkdirs();
+			try {
+				f.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public static void reset() {
@@ -119,7 +196,7 @@ public class ProjectInfo {
 	}
 
 	public boolean isStripped() {
-		return _isStripped;
+		return enable_Strip();
 	}
 
 
@@ -138,9 +215,6 @@ public class ProjectInfo {
 		return _adjustVolume;
 	}
 
-	public void Stripped() {
-		_isStripped = true;
-	}
 
 	public void Replace(AudioFile replaceAudio) {
 		_isReplaced = true;
@@ -165,7 +239,7 @@ public class ProjectInfo {
 			command += "-i " + _newAudio.getPath() + " -strict experimental ";
 			inputs++;
 		}  
-		if (_isStripped) {
+		if (enable_Strip()) {
 			// obtains just video from video and creates a temporary file in program space
 			String cmd = "avconv -i " + _currentFile.getPath() + " -map 0:v " + _tempFileName;
 			_commands.add(cmd);
@@ -206,7 +280,7 @@ public class ProjectInfo {
 	}
 
 	public boolean anyChanges() {
-		if (!_isStripped  && !_isReplaced && _overlays.isEmpty()) {
+		if (!enable_Strip()  && !_isReplaced && _overlays.isEmpty()) {
 			return false;
 		} else {
 			return true;	
@@ -227,6 +301,15 @@ public class ProjectInfo {
 		_audioWorker.execute();
 	}
 
+	public boolean enable_Strip() {
+		if (_isStripped = false) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+
 	class commandWorker extends SwingWorker<Void, Integer> {
 		public commandWorker() {
 		}
@@ -241,7 +324,7 @@ public class ProjectInfo {
 					_process = builder.start();
 					// when it is stripped, needs to create temp video file - first command ie when i = 0
 					// when it is not stripped, first command
-					if ((_isStripped && i == 1) || (!(_isStripped))) {
+					if ((enable_Strip() && i == 1) || (!(enable_Strip()))) {
 						// process stuff here
 						InputStream stdout = _process.getInputStream();
 						InputStream stderr = _process.getErrorStream();
@@ -340,6 +423,11 @@ public class ProjectInfo {
 			add(_progressPanel, BorderLayout.CENTER);
 			pack();
 		}
+	}
+
+	public void Stripped() {
+		// TODO Auto-generated method stub
+		_isStripped = true;
 	}
 
 

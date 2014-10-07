@@ -1,5 +1,5 @@
 
-public class TextInfo {
+public class TextInfo{
 	// font
 	// what text
 	// size etc
@@ -77,6 +77,12 @@ public class TextInfo {
 				//+ ":fontsize=" + _fontt + ":fontcolor=" + _colort + "\" ";
 		
 	}
+	
+	public String forFile() {
+		return _color + "#" + _size + "#" + _font + "#" + _text + "#" + _integerDuration + "#" + _colort + "#" + _sizet + "#" + _fontt;
+	}
+
+	
 	//avconv -i a.mp4 -strict experimental -i b.mp3 -strict experimental -vf drawtext="fontfile=/usr/share/fonts/truetype/freefont/FreeSerif.ttf:text='hello there':draw='lt(t,10)'" -filter_complex amix=inputs=2 lalal.mp4
 	//avconv -i a.mp4 -strict experimental -i b.mp3 -strict experimental -vf drawtext="fontfile=/usr/share/fonts/truetype/freefont/FreeMono.tff:text='ohmy':fontsize=14:fontcolor=Red:draw='lt(t,10)'" 
 	//avconv -i /afs/ec.auckland.ac.nz/users/c/e/ceir349/unixhome/a.mp4 -strict experimental -vf "drawtext=fontfile=/usr/share/fonts/truetype/freefont/FreeMono.ttf:text='love you':fontsize=28:fontcolor=Red:draw='lt(t,10)' , drawtext=fontfile=/usr/share/fonts/truetype/freefont/FreeMono.ttf:text='xxxxxaaaaaa':fontsize=28:fontcolor=Red:draw='lt(586,t)'" -filter_complex amix=inputs=1:duration=longest /afs/ec.auckland.ac.nz/users/c/e/ceir349/unixhome/work2.mp4

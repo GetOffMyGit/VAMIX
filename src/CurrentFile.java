@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import javax.swing.JOptionPane;
 
 
-public class CurrentFile {
+public class CurrentFile{
 	private static CurrentFile instanceFile;
 	private File _file;
 	private String _name;

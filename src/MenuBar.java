@@ -1,29 +1,18 @@
-import java.awt.BorderLayout;
+
 import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.List;
 
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 
@@ -40,6 +29,7 @@ public class MenuBar extends JPanel implements ActionListener {
 	private JMenuItem _render = new JMenuItem("Render");
 	private JMenuItem _download = new JMenuItem("Download");
 	private JMenuItem _save = new JMenuItem("Save");
+	private JMenuItem _load = new JMenuItem("Load");
 	private JMenuItem _stripAudio = new JMenuItem("Strip Audio");
 	private JMenuItem _replaceAudio = new JMenuItem("Replace Audio");
 	private JMenuItem _overlayAudio = new JMenuItem("Overlay Audio");
@@ -83,6 +73,9 @@ public class MenuBar extends JPanel implements ActionListener {
 		
 		_save.addActionListener(this);
 		_fileMenu.add(_save);
+		
+		_load.addActionListener(this);
+		_fileMenu.add(_load);
 		
 		_editAudioMenu.add(_stripAudio);
 		_editAudioMenu.add(_replaceAudio);
@@ -207,6 +200,10 @@ public class MenuBar extends JPanel implements ActionListener {
 		}
 		
 		if (ae.getSource() == _render) {
+			if (!(ProjectInfo.getInstance().anyChanges())) {
+				JOptionPane.showMessageDialog(this, "No changes made, render failed.");
+				return;
+			}
 			String outputName = (String)JOptionPane.showInputDialog(this,
                     "Please enter a output video name:",
                     "Render", JOptionPane.PLAIN_MESSAGE, null, null, "");
@@ -221,6 +218,8 @@ public class MenuBar extends JPanel implements ActionListener {
 		}
 		
 		if (ae.getSource() == _editText) {
+			_editTextFrame = new EditTextFrame();
+			/*
 			if(_editTextFrame == null) {
 				_editTextFrame = new EditTextFrame();
 			} else {
@@ -230,6 +229,21 @@ public class MenuBar extends JPanel implements ActionListener {
 					_editTextFrame = new EditTextFrame();
 				}
 			}
+			*/
+		}
+		
+		if (ae.getSource() == _save) {
+			ProjectInfo.getInstance().saveProject();		
+		}
+		
+		if (ae.getSource() == _load) {
+			ProjectInfo.getInstance().load();
+			_midPanelHolder.refreshMidPane();
+			_stripAudio.setEnabled(ProjectInfo.getInstance().enable_Strip());
+			_replaceAudio.setEnabled(true);
+			_overlayAudio.setEnabled(true);
+			_render.setEnabled(true);
+			_editText.setEnabled(true);
 		}
 
 	}
