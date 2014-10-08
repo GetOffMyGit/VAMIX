@@ -62,4 +62,26 @@ public class MidPanelHolder extends JPanel {
 		repaint();
 		
 	}
+	
+	public void reloadMidPane() {
+		_allInfo.remove(_fileInfo);
+		remove(_mediaPlayerHolder);
+		_fileInfo = new FileInfo();
+
+		Color backgroundColor = new Color(70, 73, 74);
+		_fileInfo.setBackground(backgroundColor);
+		_mediaPlayerHolder = new MediaPlayer();
+		_fileInfo.setPreferredSize(new Dimension(200, 80));
+		
+		_allInfo.add(_fileInfo, BorderLayout.NORTH);
+		add(_mediaPlayerHolder, BorderLayout.CENTER);
+		
+		_allInfo.remove(_overlay);
+		_overlay = new OverlayPanel(); 
+		_overlay.setPreferredSize(new Dimension(200, 360));
+		_allInfo.add(_overlay, BorderLayout.SOUTH);
+		revalidate();
+		repaint();
+		
+	}
 }

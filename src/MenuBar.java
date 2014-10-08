@@ -236,7 +236,7 @@ public class MenuBar extends JPanel implements ActionListener {
 		
 		if (ae.getSource() == _load) {
 			ProjectInfo.getInstance().load();
-			_midPanelHolder.refreshMidPane();
+			_midPanelHolder.reloadMidPane();
 			
 			_stripAudio.setEnabled(ProjectInfo.getInstance().enable_Strip());
 			_replaceAudio.setEnabled(true);

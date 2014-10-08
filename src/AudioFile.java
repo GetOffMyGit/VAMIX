@@ -11,7 +11,6 @@ public class AudioFile {
 	private String _type;
 	private String _duration;
 	private int _durationSeconds;
-	private CurrentFile _currentFile = CurrentFile.getInstance();
 	
 	public AudioFile(File passedFile) {
 		_name = passedFile.getName();
@@ -51,7 +50,7 @@ public class AudioFile {
 					for(int i =0 ; i < durationSplit.length; i++) {
 						if(durationSplit[i].equals("Duration:")) {
 							_duration = durationSplit[i + 1].replace(",", "");
-							_durationSeconds = _currentFile.calculateTime(_duration);
+							_durationSeconds = calculateTime(_duration);
 						}
 					}
 				}
@@ -60,6 +59,20 @@ public class AudioFile {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public int calculateTime(String duration) {
+		String[] timeParts = duration.split(":");
+		String[] secondsParts = timeParts[2].split("\\.");
+		int seconds = Integer.parseInt(secondsParts[0]);
+		int hours = Integer.parseInt(timeParts[0]);
+		int minutes = Integer.parseInt(timeParts[1]);
+		
+		int time = seconds;
+		time += (minutes * 60);
+		time += (hours * 3600);
+		
+		return time;
 	}
 	
 	public String getName() {

@@ -17,10 +17,11 @@ public class CurrentFile{
 	private int _durationSeconds;
 	private int _width;
 	private int _height;
-
-	private CurrentFile() {
-
+	
+	public CurrentFile() {
+		
 	}
+
 
 	public static CurrentFile getInstance() {
 		if(instanceFile == null) {
