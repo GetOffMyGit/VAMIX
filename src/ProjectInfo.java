@@ -30,8 +30,7 @@ import javax.swing.SwingWorker;
 
 
 
-public class ProjectInfo implements java.io.Serializable {
-	private CurrentFile _currentFile = CurrentFile.getInstance();
+public class ProjectInfo {
 	private String _adjustVolume;
 
 	private DefaultListModel _overlays;
@@ -57,7 +56,6 @@ public class ProjectInfo implements java.io.Serializable {
 		_overlays = new DefaultListModel<AudioFile>();
 		_commands = new ArrayList<String>();
 		_isStripped = false;
-		_currentFile = CurrentFile.getInstance();
 
 		_newAudio = null;
 		_isReplaced = false;
@@ -91,9 +89,9 @@ public class ProjectInfo implements java.io.Serializable {
 			// writes every new detail on the file
 			String ls = System.getProperty("line.separator");
 			FileWriter fw = new FileWriter(_projectloc, false);
-			fw.write(_currentFile.getPath() + ls);
+			fw.write(CurrentFile.getInstance().getPath() + ls);
 			// true = 1, false = 0
-			fw.write((enable_Strip()? "1" : "0") + ls);
+			fw.write((_isStripped? "1" : "0") + ls);
 			fw.write((_isReplaced? "1" : "0") + ls);
 			if (_newAudio == null) {
 				fw.write("" + ls);
@@ -122,15 +120,16 @@ public class ProjectInfo implements java.io.Serializable {
 				InputStream input = new FileInputStream(_projectloc);
 				BufferedReader br = new BufferedReader(new InputStreamReader(input));
 				// set up current file
+				reset();
 				File currentFile = new File(br.readLine());
 				CurrentFile.getInstance().resetInstance();
 				CurrentFile.getInstance().setInstance(currentFile);
-				reset();
 				if (br.readLine().equals("0")) {
 					_isStripped = false;
 				} else {
 					_isStripped = true;
 				}
+				System.out.print(_isStripped);
 				
 				if (br.readLine().equals("0")) {
 					_isReplaced = false;
@@ -146,6 +145,7 @@ public class ProjectInfo implements java.io.Serializable {
 				int numOverlays = Integer.parseInt(br.readLine());
 				for (int i = 0; i < numOverlays; i ++) {
 					String overlayPath = br.readLine();
+					System.out.print(overlayPath);
 					File overlay = new File(overlayPath);
 					addOverlay(new AudioFile(overlay));
 				}
@@ -196,7 +196,8 @@ public class ProjectInfo implements java.io.Serializable {
 	}
 
 	public boolean isStripped() {
-		return enable_Strip();
+		System.out.print(_isStripped);
+		return _isStripped;
 	}
 
 
@@ -207,7 +208,7 @@ public class ProjectInfo implements java.io.Serializable {
 	public void adjustVolume(int initialVolume) {
 		int inputVolume =initialVolume / 100;
 		String stringInput = Integer.toString(inputVolume);
-		String command = "avconv -i " + _currentFile.getPath() + "-filter_complex volume=volume=" + stringInput + " output.avi";
+		String command = "avconv -i " + CurrentFile.getInstance().getPath() + "-filter_complex volume=volume=" + stringInput + " output.avi";
 		_adjustVolume = command;
 	}
 
@@ -223,7 +224,7 @@ public class ProjectInfo implements java.io.Serializable {
 	}
 	
 	public void addText() {
-		String command = "avconv -i " +  _currentFile.getPath() + " -strict experimental -vf drawtext=\"fontfile=/usr/share/fonts/truetype/freefont/FreeSerif.ttf:text='hello there':draw='lt(t,10)'\" p.mp4";
+		String command = "avconv -i " +  CurrentFile.getInstance().getPath() + " -strict experimental -vf drawtext=\"fontfile=/usr/share/fonts/truetype/freefont/FreeSerif.ttf:text='hello there':draw='lt(t,10)'\" p.mp4";
 		_commands.add(command);
 		commandWorker _audioWorker = new commandWorker();
 		_audioWorker.execute();
@@ -239,15 +240,15 @@ public class ProjectInfo implements java.io.Serializable {
 			command += "-i " + _newAudio.getPath() + " -strict experimental ";
 			inputs++;
 		}  
-		if (enable_Strip()) {
+		if (_isStripped) {
 			// obtains just video from video and creates a temporary file in program space
-			String cmd = "avconv -i " + _currentFile.getPath() + " -map 0:v " + _tempFileName;
+			String cmd = "avconv -i " + CurrentFile.getInstance().getPath() + " -map 0:v " + _tempFileName;
 			_commands.add(cmd);
 			command += "-i " + _tempFileName + " -strict experimental " ;
 			//no increase in audio inputs because there would be no audio stream
 			//input is not stripped therefore include the audio
 		} else {
-			command += "-i " + _currentFile.getPath() + " -strict experimental " ;
+			command += "-i " + CurrentFile.getInstance().getPath() + " -strict experimental " ;
 			inputs++;
 		}
 
@@ -280,7 +281,7 @@ public class ProjectInfo implements java.io.Serializable {
 	}
 
 	public boolean anyChanges() {
-		if (!enable_Strip()  && !_isReplaced && _overlays.isEmpty()) {
+		if (!_isStripped  && !_isReplaced && _overlays.isEmpty()) {
 			return false;
 		} else {
 			return true;	
@@ -302,7 +303,8 @@ public class ProjectInfo implements java.io.Serializable {
 	}
 
 	public boolean enable_Strip() {
-		if (_isStripped = false) {
+		if (_isStripped) {
+			// disable button
 			return false;
 		} else {
 			return true;
@@ -407,11 +409,11 @@ public class ProjectInfo implements java.io.Serializable {
 			_progressPanel.setLayout(new BorderLayout());
 			_labelsPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			
-			_progressBar.setMaximum(_currentFile.getDurationSeconds());
+			_progressBar.setMaximum(CurrentFile.getInstance().getDurationSeconds());
 			
 			_timerLabel.setText("0");
-			_durationLabel.setText("/ " + _currentFile.getDurationSeconds());
-			_renderingLabel.setText("Rendering: " + _currentFile.getName());
+			_durationLabel.setText("/ " + CurrentFile.getInstance().getDurationSeconds());
+			_renderingLabel.setText("Rendering: " + CurrentFile.getInstance().getName());
 			
 			_labelsPanel.add(_timerLabel);
 			_labelsPanel.add(_durationLabel);

@@ -35,7 +35,6 @@ public class MenuBar extends JPanel implements ActionListener {
 	private JMenuItem _overlayAudio = new JMenuItem("Overlay Audio");
 	private JMenuItem _editText = new JMenuItem("Edit Text");
 	private DownloadFrame dl = null;
-	private CurrentFile _currentFile;
 	private MidPanelHolder _midPanelHolder;
 	private EditTextFrame _editTextFrame;
 	
@@ -93,6 +92,7 @@ public class MenuBar extends JPanel implements ActionListener {
 		_overlayAudio.setEnabled(false);
 		_render.setEnabled(false);
 		_editText.setEnabled(false);
+		_save.setEnabled(false);
 		
 		_fileTab.add(_fileMenu);
 		_editAudioTab.add(_editAudioMenu);
@@ -115,15 +115,12 @@ public class MenuBar extends JPanel implements ActionListener {
 			int fileChooserReturn = fileChooser.showOpenDialog(null);
 			if(fileChooserReturn == JFileChooser.APPROVE_OPTION) {
 				File theFile = fileChooser.getSelectedFile();
-				_currentFile = CurrentFile.getInstance();
-				_currentFile.resetInstance();
-				_currentFile.setInstance(theFile);
-				if(_currentFile.getType() == null) {
+				CurrentFile.getInstance().resetInstance();
+				CurrentFile.getInstance().setInstance(theFile);
+				if(CurrentFile.getInstance().getType() == null) {
 					JOptionPane.showMessageDialog(this, "Please select a video file");
-					_currentFile = null;
-				} else if (!((_currentFile.getType().equals("Video")) || (_currentFile.getType().equals("Video with Audio")))) {
+				} else if (!((CurrentFile.getInstance().getType().equals("Video")) || (CurrentFile.getInstance().getType().equals("Video with Audio")))) {
 					JOptionPane.showMessageDialog(this, "Please select a video file");
-					_currentFile = null;
 				} else {
 					_midPanelHolder.refreshMidPane();
 					_stripAudio.setEnabled(true);
@@ -131,6 +128,7 @@ public class MenuBar extends JPanel implements ActionListener {
 					_overlayAudio.setEnabled(true);
 					_render.setEnabled(true);
 					_editText.setEnabled(true);
+					_save.setEnabled(true);
 				}
 			}
 		}
@@ -149,7 +147,7 @@ public class MenuBar extends JPanel implements ActionListener {
 			}	
 		}
 		if (ae.getSource() == _stripAudio) {
-			if ((_currentFile.getType().equals("Video")) || (ProjectInfo.getInstance().isStripped())) { 
+			if ((CurrentFile.getInstance().getType().equals("Video")) || (ProjectInfo.getInstance().isStripped())) { 
 				JOptionPane.showMessageDialog(null, "Video file does not have audio"); 
 				return;
 			}
@@ -167,7 +165,7 @@ public class MenuBar extends JPanel implements ActionListener {
 			
 		}
 		if (ae.getSource() == _replaceAudio) {
-			if ((_currentFile.getType().equals("Video"))  || (ProjectInfo.getInstance().isStripped())) { 
+			if ((CurrentFile.getInstance().getType().equals("Video"))  || (ProjectInfo.getInstance().isStripped())) { 
 				JOptionPane.showMessageDialog(this, "Video file does not have audio, please overlay"); 
 				return;
 			}
@@ -239,8 +237,10 @@ public class MenuBar extends JPanel implements ActionListener {
 		if (ae.getSource() == _load) {
 			ProjectInfo.getInstance().load();
 			_midPanelHolder.refreshMidPane();
+			
 			_stripAudio.setEnabled(ProjectInfo.getInstance().enable_Strip());
 			_replaceAudio.setEnabled(true);
+			_save.setEnabled(true);
 			_overlayAudio.setEnabled(true);
 			_render.setEnabled(true);
 			_editText.setEnabled(true);
@@ -267,7 +267,7 @@ public class MenuBar extends JPanel implements ActionListener {
 			
 			// progress line bars are seen as dots
 			// Suppress quotation marks
-			String cmd = "avconv -i " + _currentFile.getPath() + " -map 0:a ~/"+ _outputName;
+			String cmd = "avconv -i " + CurrentFile.getInstance().getPath() + " -map 0:a ~/"+ _outputName;
 			ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
 			
 			builder.redirectErrorStream(true);
