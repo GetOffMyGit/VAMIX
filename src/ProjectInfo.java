@@ -98,11 +98,13 @@ public class ProjectInfo {
 			} else {
 				fw.write(_newAudio.getPath() + ls);
 			}
-			fw.write(_overlays.getSize() + ls);
+			fw.write(_overlays.size() + ls);
+			
 			for (int i = 0; i < _overlays.size(); i ++) {
 				AudioFile a = (AudioFile)_overlays.getElementAt(i);
 				fw.write(a.getPath() + ls);
 			}
+			
 			fw.write(_intro.forFile() + ls);
 			fw.write(_outro.forFile() + ls);
 			// text stuff
@@ -129,7 +131,6 @@ public class ProjectInfo {
 				} else {
 					_isStripped = true;
 				}
-				System.out.print(_isStripped);
 				
 				if (br.readLine().equals("0")) {
 					_isReplaced = false;
@@ -145,7 +146,6 @@ public class ProjectInfo {
 				int numOverlays = Integer.parseInt(br.readLine());
 				for (int i = 0; i < numOverlays; i ++) {
 					String overlayPath = br.readLine();
-					System.out.print(overlayPath);
 					File overlay = new File(overlayPath);
 					addOverlay(new AudioFile(overlay));
 				}
@@ -173,13 +173,7 @@ public class ProjectInfo {
 
 			// Done with the file
 		} else {
-			// make any necessary parent directories
-			f.getParentFile().mkdirs();
-			try {
-				f.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			// project not existing
 		}
 	}
 
@@ -196,7 +190,6 @@ public class ProjectInfo {
 	}
 
 	public boolean isStripped() {
-		System.out.print(_isStripped);
 		return _isStripped;
 	}
 
@@ -223,13 +216,6 @@ public class ProjectInfo {
 
 	}
 	
-	public void addText() {
-		String command = "avconv -i " +  CurrentFile.getInstance().getPath() + " -strict experimental -vf drawtext=\"fontfile=/usr/share/fonts/truetype/freefont/FreeSerif.ttf:text='hello there':draw='lt(t,10)'\" p.mp4";
-		_commands.add(command);
-		commandWorker _audioWorker = new commandWorker();
-		_audioWorker.execute();
-		
-	}
 
 
 	public void audioCombine(String outputName) {
@@ -261,13 +247,10 @@ public class ProjectInfo {
 				inputs++;
 			}
 		}
-		//System.out.println(_intro.toCommandIntro());
-		//System.out.println(_outro.toCommandOutro());
 		command += _intro.toCommandIntro() + _outro.toCommandOutro();
 		command += "-filter_complex amix=inputs=" + inputs + ":duration=longest " + System.getProperty("user.home") 
 				+ System.getProperty("file.separator") + outputName;
 		_commands.add(command);
-		//System.out.println(command);
 
 	}
 
@@ -298,7 +281,7 @@ public class ProjectInfo {
 		audioCombine(outputName);
 		//"allow non-standardized experimental things"
 		//avconv -i x.mp4 -strict experimental -i a.mp3 -strict experimental -map 0:v -map 1:a output.mp4
-		commandWorker _audioWorker = new commandWorker();
+		commandWorker _audioWorker = new commandWorker(outputName);
 		_audioWorker.execute();
 	}
 
@@ -313,12 +296,15 @@ public class ProjectInfo {
 
 
 	class commandWorker extends SwingWorker<Void, Integer> {
-		public commandWorker() {
+		String _outputName = "";
+		public commandWorker(String outputName) {
+			_outputName = outputName;
 		}
 
 		@Override
 		protected Void doInBackground() throws Exception {
 			int i = 0;
+
 			for (String s : _commands) {
 				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", s);
 				builder.redirectErrorStream(true);
@@ -326,20 +312,20 @@ public class ProjectInfo {
 					_process = builder.start();
 					// when it is stripped, needs to create temp video file - first command ie when i = 0
 					// when it is not stripped, first command
-					if ((enable_Strip() && i == 1) || (!(enable_Strip()))) {
+					if ((_isStripped && i == 1) || (!(_isStripped))) {
 						// process stuff here
 						InputStream stdout = _process.getInputStream();
 						InputStream stderr = _process.getErrorStream();
 						BufferedReader stdoutBuffered =	new BufferedReader(new InputStreamReader(stdout));
 						String line = null;
-					
+						
 						if(_progressFrame == null) {
-							_progressFrame = new ProgressFrame();
+							_progressFrame = new ProgressFrame(_outputName);
 						} else {
 							if(_progressFrame.isActive()) {
 								_progressFrame.toFront();
 							} else {
-								_progressFrame = new ProgressFrame();
+								_progressFrame = new ProgressFrame(_outputName);
 							}
 						}
 
@@ -400,7 +386,7 @@ public class ProjectInfo {
 		private JPanel _labelsPanel = new JPanel();
 		private JLabel _renderingLabel = new JLabel();
 		
-		public ProgressFrame() {
+		public ProgressFrame(String _outputName) {
 			setTitle("Progress");
 			setLayout(new BorderLayout());
 			setVisible(true);
@@ -413,7 +399,7 @@ public class ProjectInfo {
 			
 			_timerLabel.setText("0");
 			_durationLabel.setText("/ " + CurrentFile.getInstance().getDurationSeconds());
-			_renderingLabel.setText("Rendering: " + CurrentFile.getInstance().getName());
+			_renderingLabel.setText("Rendering: " + _outputName);
 			
 			_labelsPanel.add(_timerLabel);
 			_labelsPanel.add(_durationLabel);
